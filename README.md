@@ -28,57 +28,78 @@ CoachAI 是一个集智能作业批改、动作识别计数、语音交互和任
 - 任务进度跟踪
 - 成就系统和激励机制
 
-## 技术架构 (简化版本)
+## 技术架构 (豆包AI助手最佳实践)
 
 ### 前端
 - React 18 + TypeScript
 - Ant Design / Chakra UI
 - Vite 构建工具
 
-### 后端
-- Python + Django 5.0
-- MySQL 8.0 (主数据库)
-- 无中间件架构 (简化部署)
-- Docker 容器化
+### 后端 (豆包最佳实践)
+- **Python + Django 5.0** - 企业级Web框架
+- **MySQL 8.0** - 主数据库，支持事务和复杂查询
+- **无中间件架构** - 简化部署，使用数据库表实现缓存和队列功能
+- **豆包标准结构** - 遵循豆包AI助手推荐的Django项目结构最佳实践
+- **多环境配置** - 开发/生产环境分离，安全配置管理
 
 ### AI服务
-- PaddleOCR / EasyOCR (OCR识别)
-- OpenCV + MediaPipe (计算机视觉)
-- Whisper / SpeechRecognition (语音识别)
-- 基于数据库的异步任务处理
+- **PaddleOCR / EasyOCR** - OCR识别，支持中英文作业批改
+- **OpenCV + MediaPipe** - 计算机视觉，实时动作识别和姿势评估
+- **Whisper / SpeechRecognition** - 语音识别，支持语音唤醒和交互
+- **数据库驱动异步** - 基于数据库表的异步任务处理，简化架构
 
-## 项目结构 (标准 src 布局)
+### 架构特点
+1. **企业级标准** - 大厂通用、可直接落地、支持大型项目迭代
+2. **松耦合设计** - 配置拆分、应用集中、全局公共层分离
+3. **高可维护性** - 结构清晰，新人快速上手，便于团队协作
+4. **易测试扩展** - 业务逻辑与视图分离，便于单元测试和功能扩展
+5. **安全规范** - 环境变量管理，敏感信息不硬编码，生产环境安全配置
+
+## 项目结构 (豆包AI助手最佳实践)
 
 ```
-coach-ai/
-├── src/                         # 所有源代码
-│   ├── coachai/                 # Django项目配置
-│   │   ├── settings/           # 多环境配置
-│   │   ├── urls.py             # URL路由
-│   │   ├── wsgi.py             # WSGI配置
-│   │   └── asgi.py             # ASGI配置
-│   ├── apps/                   # Django应用
-│   │   ├── accounts/           # 用户管理
-│   │   ├── homework/           # 作业管理
-│   │   ├── exercise/           # 运动管理
-│   │   ├── tasks/              # 任务管理
-│   │   ├── achievements/       # 成就系统
-│   │   └── common/             # 公共组件
-│   ├── services/               # AI服务层
-│   └── utils/                  # 工具函数
-├── tests/                       # 测试代码
-│   ├── unit/                   # 单元测试
-│   ├── integration/            # 集成测试
-│   └── performance/            # 性能测试
-├── documents/                   # 项目文档
-├── convention/                  # 编码规范
-├── scripts/                     # 部署脚本
-├── pyproject.toml              # 依赖管理 (Poetry)
-├── manage.py                   # Django管理脚本
-├── .env.example                # 环境变量示例
-├── .gitignore                  # Git忽略文件
-├── README.md                   # 项目说明
-└── LICENSE                     # GPL v3许可证
+coach-ai/                      # 项目根目录（Git 仓库根目录）
+├── .env                      # 环境变量（本地开发，不上传 Git）
+├── .env.example              # 环境变量模板（上传 Git）
+├── .gitignore                # Git 忽略文件
+├── manage.py                 # Django 管理脚本
+├── pyproject.toml            # 依赖管理（替代 requirements.txt）
+├── README.md                 # 项目说明
+├── config/                   # 项目核心配置（重命名默认的 project 目录）
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── wsgi.py
+│   ├── urls.py               # 根路由（只做分发，不写业务路由）
+│   ├── settings/             # 拆分配置文件（核心优化）
+│   │   ├── __init__.py
+│   │   ├── base.py           # 公共基础配置
+│   │   ├── dev.py            # 开发环境配置
+│   │   └── prod.py           # 生产环境配置
+├── apps/                     # 所有业务应用统一存放（核心优化）
+│   ├── __init__.py
+│   ├── accounts/             # 用户账户模块
+│   ├── homework/             # 作业管理模块
+│   ├── exercise/             # 运动管理模块
+│   ├── tasks/                # 任务管理模块
+│   ├── achievements/         # 成就系统模块
+│   └── common/               # 公共核心模块（基类、工具）
+├── core/                     # 项目全局公共层
+│   ├── __init__.py
+│   ├── constants.py          # 全局常量
+│   ├── exceptions.py         # 全局异常处理
+│   ├── middlewares.py        # 自定义中间件
+│   ├── paginations.py        # 通用分页
+│   ├── responses.py          # 统一返回格式
+│   └── utils.py              # 全局工具函数
+├── services/                 # AI 服务层
+├── utils/                    # 工具函数层
+├── templates/                # 全局模板（前后端分离可删除）
+├── static/                   # 全局静态文件
+├── media/                    # 用户上传文件（自动生成）
+├── logs/                     # 日志文件（自动生成）
+├── tests/                    # 全局测试用例
+├── docs/                     # 项目文档
+└── convention/               # 编码规范
 ```
 
 ## 快速开始
@@ -129,11 +150,13 @@ python manage.py runserver
 本项目采用严格的编码规范，详见 [convention/coding-style.md](convention/coding-style.md)。
 
 主要规范包括：
-- 标准 src 源码布局
-- 严格的类型注解
-- 完整的文档字符串
-- 统一的导入顺序
-- 详细的错误处理
+- **豆包最佳实践结构** - 遵循豆包AI助手推荐的Django项目结构
+- **严格的类型注解** - 所有函数必须标注参数类型和返回类型
+- **完整的文档字符串** - 包含Args、Returns、Raises部分，注释长度规范
+- **统一的导入顺序** - Python标准库 → 第三方库 → 项目内部
+- **详细的错误处理** - 禁止裸except，使用异常链，资源自动释放
+- **安全开发规范** - 禁止硬编码敏感信息，输入验证和转义
+- **性能优化要求** - 禁止循环内IO操作，使用批量处理和生成器
 
 ### 测试
 ```bash
@@ -235,10 +258,13 @@ docker-compose up -d
 
 ## 相关链接
 
-- [项目文档](documents/)
+- [项目文档](docs/)
 - [API文档](http://localhost:8000/swagger/)
-- [部署指南](docs/deployment.md)
-- [开发指南](docs/development.md)
+- [部署指南](docs/deployment.md) (待创建)
+- [开发指南](docs/development.md) (待创建)
+- [技术设计文档](docs/TECH_DETAILED_DESIGN.md)
+- [产品需求文档](docs/PRD.md)
+- [商业需求文档](docs/BRD.md)
 
 ---
 

@@ -104,7 +104,7 @@ exclude = [
 ]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings.testing"
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
 python_files = ["tests.py", "test_*.py"]
 python_classes = ["*Test"]
 python_functions = ["test_*"]

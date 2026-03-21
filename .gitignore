@@ -72,8 +72,7 @@ env/
 ENV/
 
 # Project specific
-documents/  # 文档目录不提交，但保留 documents/README.md
-!documents/README.md
+# 文档目录已移动到 docs/，docs/ 目录需要提交
 
 # Local development
 .local/
