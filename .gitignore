@@ -1,42 +1,18 @@
-# Dependencies
-node_modules/
-.pnp/
-.pnp.js
-yarn.lock
-package-lock.json
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
 
-# Testing
-coverage/
-.nyc_output/
-
-# Production
-build/
-dist/
-out/
-
-# Misc
-.DS_Store
+# Environment
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage
-*.lcov
+.env.*.local
 
 # IDE
 .vscode/
@@ -45,10 +21,10 @@ coverage
 *.swo
 
 # OS
+.DS_Store
 Thumbs.db
 
 # Python
-__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -68,43 +44,53 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Virtual Environments
-venv/
-env/
-ENV/
+# Tests
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# AI Models
-models/
-*.onnx
-*.pb
-*.h5
-*.pth
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
 # Docker
 docker-compose.override.yml
 
+# Logs
+logs/
+*.log
+
 # Temporary files
-tmp/
-temp/
+*.tmp
+*.temp
 
-# Secrets
-secrets/
-*.pem
-*.key
-*.crt
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
 
-# Documentation
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
+# Project specific
+documents/  # 文档目录不提交，但保留 documents/README.md
+!documents/README.md
+
+# Local development
+.local/
+.cache/
+.ropeproject/
+
+# macOS
+._*
+
+# Windows
+ehthumbs.db
+[Dd]esktop.ini
+
+# Linux
+*~
+
+# Vim
+.*.swp
+.*.swo
+*~
