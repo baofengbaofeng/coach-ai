@@ -99,7 +99,7 @@ coach-ai/                      # 项目根目录（Git 仓库根目录）
 ├── logs/                     # 日志文件（自动生成）
 ├── tests/                    # 全局测试用例
 ├── docs/                     # 项目文档
-└── convention/               # 编码规范
+└── .rules/                  # 编码规范和项目规则
 ```
 
 ## 快速开始
@@ -147,7 +147,7 @@ python manage.py runserver
 ## 开发指南
 
 ### 代码规范
-本项目采用严格的编码规范，详见 [convention/coding-style.md](convention/coding-style.md)。
+本项目采用严格的编码规范，详见 [.rules/coding-style.md](.rules/coding-style.md)。
 
 主要规范包括：
 - **豆包最佳实践结构** - 遵循豆包AI助手推荐的Django项目结构
