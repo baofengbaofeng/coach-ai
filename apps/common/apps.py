@@ -3,7 +3,13 @@
 """
 from __future__ import annotations
 
+import logging
+
 from django.apps import AppConfig
+
+
+# ==================== 日志记录器 ====================
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class CommonConfig(AppConfig):
@@ -17,6 +23,12 @@ class CommonConfig(AppConfig):
     
     def ready(self) -> None:
         """
-        应用就绪回调函数。
+        应用就绪回调函数，注册信号处理器。
         """
-        pass
+        # 导入信号处理器
+        try:
+            from apps.common import signals
+            
+            _LOGGER.info("公共模块信号处理器已注册")
+        except ImportError as e:
+            _LOGGER.warning("导入信号处理器失败: %s", str(e))
