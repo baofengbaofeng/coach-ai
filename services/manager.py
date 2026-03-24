@@ -245,6 +245,29 @@ class AIServiceManager:
         
         return status
     
+    def get_available_services(self) -> List[str]:
+        """
+        获取可用的服务列表。
+        
+        Returns:
+            服务名称列表
+        """
+        services = []
+        
+        # 从管理器获取服务
+        for manager_name, manager in self._managers.items():
+            if hasattr(manager, "get_available_services"):
+                services.extend(manager.get_available_services())
+            else:
+                services.append(manager_name)
+        
+        # 从直接管理的服务获取
+        for service_key, service in self._services.items():
+            if service.service_name not in services:
+                services.append(service.service_name)
+        
+        return list(set(services))  # 去重
+    
     def cleanup(self) -> None:
         """
         清理所有AI服务。

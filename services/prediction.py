@@ -513,4 +513,14 @@ class PredictionService(ConfigurableAIService, UserAwareAIService):
         检查配置变更是否需要重新初始化服务。
         
         Returns:
-            是否需要
+            是否需要重新初始化
+        """
+        return True
+    
+    def _cleanup_internal(self) -> None:
+        """
+        内部清理逻辑。
+        """
+        # 清理缓存
+        self._prediction_cache.clear()
+        self._logger.info("预测服务清理完成")
