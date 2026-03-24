@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 # ==================== 安全配置 ====================
 SECRET_KEY: str = "dev-secret-key-for-testing-only"
 DEBUG: bool = True
-ALLOWED_HOSTS: List[str] = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS: List[str] = ["localhost", "127.0.0.1", "testserver"]
 
 
 # ==================== 应用定义 ====================
@@ -42,6 +42,7 @@ INSTALLED_APPS: List[str] = [
     "apps.tasks",
     "apps.achievements",
     "apps.common",
+    "apps.api",
 ]
 
 
