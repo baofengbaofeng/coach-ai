@@ -63,7 +63,7 @@ urlpatterns = [
     path("api/v1/common/", include("common.urls")),
     
     # 健康检查端点：用于监控系统健康状态
-    path("health/", include("health_check.urls")),
+    # path("health/", include("health_check.urls")),  # 暂时注释，未安装health_check
 ]
 
 

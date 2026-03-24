@@ -12,7 +12,7 @@ class TasksConfig(AppConfig):
     """
     
     default_auto_field: str = "django.db.models.BigAutoField"
-    name: str = "tasks"
+    name: str = "apps.tasks"
     verbose_name: str = "任务管理"
     
     def ready(self) -> None:

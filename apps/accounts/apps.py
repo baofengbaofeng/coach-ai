@@ -18,7 +18,7 @@ class AccountsConfig(AppConfig):
     """
     
     default_auto_field: str = "django.db.models.BigAutoField"
-    name: str = "accounts"
+    name: str = "apps.accounts"
     verbose_name: str = "用户管理"
     
     def ready(self) -> None:

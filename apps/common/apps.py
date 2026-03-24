@@ -12,7 +12,7 @@ class CommonConfig(AppConfig):
     """
     
     default_auto_field: str = "django.db.models.BigAutoField"
-    name: str = "common"
+    name: str = "apps.common"
     verbose_name: str = "公共模块"
     
     def ready(self) -> None:

@@ -12,7 +12,7 @@ class AchievementsConfig(AppConfig):
     """
     
     default_auto_field: str = "django.db.models.BigAutoField"
-    name: str = "achievements"
+    name: str = "apps.achievements"
     verbose_name: str = "成就系统"
     
     def ready(self) -> None:

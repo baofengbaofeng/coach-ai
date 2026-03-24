@@ -12,7 +12,7 @@ class HomeworkConfig(AppConfig):
     """
     
     default_auto_field: str = "django.db.models.BigAutoField"
-    name: str = "homework"
+    name: str = "apps.homework"
     verbose_name: str = "作业管理"
     
     def ready(self) -> None:

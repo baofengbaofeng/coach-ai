@@ -14,7 +14,7 @@ repository = "https://github.com/baofengbaofeng/coach-ai"
 keywords = ["education", "ai", "homework", "exercise", "learning"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.14"
 Django = "^5.0.2"
 djangorestframework = "^3.15.1"
 djangorestframework-simplejwt = "^5.3.1"
