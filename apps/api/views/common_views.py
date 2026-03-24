@@ -125,19 +125,18 @@ class SystemStatusView(APIView):
             HTTP响应
         """
         try:
-            import psutil
             import platform
             from django.conf import settings
             
-            # 获取系统信息
+            # 获取系统信息（不依赖psutil）
             system_info = {
                 "platform": platform.platform(),
                 "python_version": platform.python_version(),
                 "django_version": self._get_django_version(),
-                "cpu_count": psutil.cpu_count(),
-                "memory_total": psutil.virtual_memory().total,
-                "memory_available": psutil.virtual_memory().available,
-                "disk_usage": psutil.disk_usage("/").percent,
+                "cpu_count": "N/A",  # 简化，不依赖psutil
+                "memory_total": "N/A",
+                "memory_available": "N/A",
+                "disk_usage": "N/A",
             }
             
             # 获取应用信息

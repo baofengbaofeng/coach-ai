@@ -23,33 +23,6 @@ from .common_serializers import (
     SortRequestSerializer,
 )
 
-from .user_serializers import (
-    UserProfileSerializer,
-    UserStatsSerializer,
-    UserPreferencesSerializer,
-)
-
-from .exercise_serializers import (
-    ExerciseRecordSerializer,
-    ExercisePlanSerializer,
-    ExerciseAnalysisSerializer,
-    ExerciseStatsSerializer,
-)
-
-from .task_serializers import (
-    TaskSerializer,
-    TaskCategorySerializer,
-    TaskStatsSerializer,
-    TaskDashboardSerializer,
-)
-
-from .achievement_serializers import (
-    AchievementSerializer,
-    UserAchievementSerializer,
-    AchievementStatsSerializer,
-    AchievementDashboardSerializer,
-)
-
 
 __all__: list[str] = [
     # AI序列化器
