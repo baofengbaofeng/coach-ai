@@ -9,6 +9,76 @@ alwaysApply: true
 
 你是 CoachAI 项目的 AI 开发助手。在生成或修改代码时，必须严格遵守以下规范。
 
+## 语言规范（新增 2026-03-26）
+
+### 代码注释语言（强制）
+- **必须使用中文**：所有代码注释必须使用中文编写
+- **文档字符串**：函数、类、模块的文档字符串必须使用中文
+- **复杂逻辑**：复杂业务逻辑必须添加详细的中文注释
+- **TODO注释**：TODO、FIXME等注释也必须使用中文
+
+### 日志输出语言（强制）
+- **必须使用英文**：所有日志输出必须使用英文
+- **结构化日志**：日志消息和结构化字段都使用英文
+- **日志级别**：DEBUG、INFO、WARNING、ERROR、CRITICAL日志都使用英文
+- **禁止中文日志**：代码中不允许出现中文的日志输出
+
+### 异常消息语言（强制）
+- **必须使用英文**：所有异常抛出消息必须使用英文
+- **错误描述**：异常消息应该清晰描述错误原因
+- **禁止中文异常**：代码中不允许出现中文的异常抛出消息
+- **业务异常**：自定义业务异常的消息也必须使用英文
+
+### 示例代码
+```python
+# ✅ 正确示例 - 中文注释 + 英文日志/异常
+def create_user(email: str, password: str) -> User:
+    """
+    创建新用户
+    
+    参数:
+        email: 用户邮箱地址
+        password: 用户密码
+        
+    返回:
+        User: 创建的用户对象
+        
+    异常:
+        ValueError: 如果邮箱已存在或密码不符合要求
+    """
+    # 检查邮箱是否已存在
+    existing_user = user_repository.get_by_email(email)
+    if existing_user:
+        # ❌ 错误：raise ValueError("邮箱已存在")
+        # ✅ 正确：
+        raise ValueError("Email already exists")
+    
+    # 创建用户逻辑
+    user = User(email=email, password=password)
+    user_repository.save(user)
+    
+    # ❌ 错误：logger.info("用户创建成功", email=email)
+    # ✅ 正确：
+    logger.info("User created successfully", email=email)
+    
+    return user
+
+# ✅ 正确示例 - 结构化日志
+logger.info("User login successful", 
+           user_id=user.id, 
+           ip=request_ip, 
+           duration=login_duration)
+
+# ✅ 正确示例 - 业务异常
+class UserNotFoundException(Exception):
+    """用户未找到异常"""
+    def __init__(self, user_id: int):
+        # ❌ 错误：super().__init__(f"用户ID {user_id} 不存在")
+        # ✅ 正确：
+        super().__init__(f"User with ID {user_id} not found")
+        self.user_id = user_id
+```
+
 ## 禁止事项
 
 1. 禁止使用 Tab 缩进
