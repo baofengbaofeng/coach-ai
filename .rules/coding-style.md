@@ -1,9 +1,9 @@
 ---
-description: LLM Browser Agent 编码规范，每次对话均需遵循
+description: CoachAI项目编码规范，每次对话均需遵循
 alwaysApply: true
 ---
 
-# LLM Browser Agent 编码规范
+# CoachAI项目编码规范
 
 ## 角色定义
 
