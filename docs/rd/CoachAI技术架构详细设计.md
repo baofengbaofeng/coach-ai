@@ -1,85 +1,70 @@
-# CoachAI 数据库设计指南
+# CoachAI 技术架构详细设计
 
 ## 📋 文档信息
 
 | 项目 | 内容 |
 |------|------|
-| **文档名称** | CoachAI 数据库设计指南 |
-| **文档版本** | 1.0.0 |
+| **文档名称** | CoachAI 技术架构详细设计 |
+| **文档版本** | 4.0.0 |
 | **创建日期** | 2026-03-26 |
 | **最后更新** | 2026-03-26 |
 | **文档状态** | 正式版 |
 | **作者** | CoachAI-RD (后端研发专家) |
 | **审核人** | 待定 |
+| **开源许可证** | GPL V3 (所有衍生代码需保持开源) |
 | **关联文档** | [技术架构概要设计.md](./CoachAI技术架构概要设计.md) |
-| **目标读者** | 数据库管理员、后端开发人员 |
+| **目标读者** | 开发团队、测试团队、运维团队 |
 
-## 🎯 设计原则
+## 📝 修订历史
 
-### 1.1 核心设计原则
+| 版本 | 日期 | 作者 | 变更描述 |
+|------|------|------|----------|
+| 3.0.0 | 2026-03-26 | CoachAI-RD | 基于Tornado框架的详细技术设计 |
+| 4.0.0 | 2026-03-26 | CoachAI-RD | 重命名为技术架构详细设计，合并数据库设计内容 |
+
+## 🎯 设计目标
+
+### 1.1 核心设计目标
+1. **高性能**：利用Tornado异步特性，支持高并发实时处理
+2. **可维护**：代码结构清晰，符合编码规范，便于团队协作
+3. **可扩展**：模块化设计，支持功能快速迭代和水平扩展
+4. **安全可靠**：数据安全、权限控制、错误处理完善
+
+### 1.2 代码规范要求
+1. **编码规范**：所有前后端代码必须严格遵循`.rules/coding-style.md`文件定义的规则
+2. **注释规范**：所有代码注释必须使用中文编写，确保团队理解一致
+3. **命名规范**：遵循统一的命名约定，提高代码可读性
+4. **质量检查**：建立代码审查机制，确保代码规范执行
+5. **开源协议**：项目使用GPL V3开源协议，所有衍生代码需保持开源
+
+### 1.3 技术约束
+1. **Python 3.12**：使用venv虚拟环境
+2. **Tornado框架**：异步Web框架
+3. **MySQL 5.8**：关系型数据库（当前环境支持版本）
+4. **编码规范**：严格遵循项目编码规范，中文注释
+5. **数据库前缀**：所有表名使用统一前缀：`coach_ai_`
+
+## 📊 数据库设计
+
+### 2.1 数据库设计原则
+
+#### 2.1.1 设计原则
 1. **多租户隔离**：通过tenant_id字段实现数据隔离
 2. **性能优先**：合理的索引设计，避免全表扫描
 3. **扩展性**：支持水平扩展和垂直扩展
 4. **数据一致性**：使用事务保证数据完整性
 5. **安全性**：敏感数据加密存储，SQL注入防护
 
-### 1.2 命名规范
-- **表名**：小写蛇形命名，复数形式（users, tenants）
-- **字段名**：小写蛇形命名（created_at, user_name）
-- **索引名**：idx_表名_字段名（idx_users_email）
-- **外键名**：fk_表名_字段名（fk_orders_user_id）
-- **约束名**：uk_表名_字段名（uk_users_email）
+#### 2.1.2 命名规范
+- **表名前缀**：所有表使用`coach_ai_`前缀
+- **字段命名**：小写蛇形命名（snake_case）
+- **索引命名**：`idx_表名_字段名`
+- **外键命名**：`fk_表名_字段名`
+- **约束命名**：`uk_表名_字段名`（唯一约束）
 
-## 📊 数据库表设计
+### 2.2 核心表结构设计
 
-### 2.1 核心表结构
-
-#### 2.1.1 租户表（tenants）
-```sql
--- 租户表：存储家庭租户信息，每个家庭对应一个租户
-CREATE TABLE coach_ai_tenants (
-    -- 主键和标识
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
-    uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '租户唯一标识（UUID）',
-    
-    -- 基本信息
-    name VARCHAR(100) NOT NULL COMMENT '租户名称（家庭名称）',
-    family_type ENUM('core', 'couple', 'extended', 'single') NOT NULL COMMENT '家庭类型',
-    description TEXT COMMENT '家庭描述',
-    
-    -- 订阅信息
-    subscription_plan ENUM('basic', 'premium', 'professional') NOT NULL DEFAULT 'basic' COMMENT '订阅计划',
-    subscription_status ENUM('active', 'suspended', 'cancelled') NOT NULL DEFAULT 'active' COMMENT '订阅状态',
-    max_members INT NOT NULL DEFAULT 5 COMMENT '最大成员数量',
-    storage_quota BIGINT UNSIGNED NOT NULL DEFAULT 10737418240 COMMENT '存储配额（字节，默认10GB）',
-    
-    -- 联系信息
-    contact_email VARCHAR(255) COMMENT '联系邮箱',
-    contact_phone VARCHAR(20) COMMENT '联系电话',
-    
-    -- 时间信息
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    subscription_start_at TIMESTAMP COMMENT '订阅开始时间',
-    subscription_end_at TIMESTAMP COMMENT '订阅结束时间',
-    
-    -- 扩展信息
-    settings JSON COMMENT '租户设置',
-    metadata JSON COMMENT '元数据',
-    
-    -- 索引
-    INDEX idx_uuid (uuid),
-    INDEX idx_subscription_status (subscription_status),
-    INDEX idx_created_at (created_at),
-    INDEX idx_family_type (family_type),
-    
-    -- 约束
-    CHECK (max_members > 0),
-    CHECK (storage_quota > 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租户（家庭）信息表';
-```
-
-#### 2.1.2 用户表（users）
+#### 2.2.1 用户表（coach_ai_users）
 ```sql
 -- 用户表：存储系统用户信息，支持邮箱、手机号等多种登录方式
 CREATE TABLE coach_ai_users (
@@ -141,7 +126,52 @@ CREATE TABLE coach_ai_users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统用户表';
 ```
 
-#### 2.1.3 家庭成员表（family_members）
+#### 2.2.2 租户表（coach_ai_tenants）
+```sql
+-- 租户表：存储家庭租户信息，每个家庭对应一个租户
+CREATE TABLE coach_ai_tenants (
+    -- 主键和标识
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
+    uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '租户唯一标识（UUID）',
+    
+    -- 基本信息
+    name VARCHAR(100) NOT NULL COMMENT '租户名称（家庭名称）',
+    family_type ENUM('core', 'couple', 'extended', 'single') NOT NULL COMMENT '家庭类型',
+    description TEXT COMMENT '家庭描述',
+    
+    -- 订阅信息
+    subscription_plan ENUM('basic', 'premium', 'professional') NOT NULL DEFAULT 'basic' COMMENT '订阅计划',
+    subscription_status ENUM('active', 'suspended', 'cancelled') NOT NULL DEFAULT 'active' COMMENT '订阅状态',
+    max_members INT NOT NULL DEFAULT 5 COMMENT '最大成员数量',
+    storage_quota BIGINT UNSIGNED NOT NULL DEFAULT 10737418240 COMMENT '存储配额（字节，默认10GB）',
+    
+    -- 联系信息
+    contact_email VARCHAR(255) COMMENT '联系邮箱',
+    contact_phone VARCHAR(20) COMMENT '联系电话',
+    
+    -- 时间信息
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    subscription_start_at TIMESTAMP COMMENT '订阅开始时间',
+    subscription_end_at TIMESTAMP COMMENT '订阅结束时间',
+    
+    -- 扩展信息
+    settings JSON COMMENT '租户设置',
+    metadata JSON COMMENT '元数据',
+    
+    -- 索引
+    INDEX idx_uuid (uuid),
+    INDEX idx_subscription_status (subscription_status),
+    INDEX idx_created_at (created_at),
+    INDEX idx_family_type (family_type),
+    
+    -- 约束
+    CHECK (max_members > 0),
+    CHECK (storage_quota > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租户（家庭）信息表';
+```
+
+#### 2.2.3 家庭成员表（coach_ai_family_members）
 ```sql
 -- 家庭成员表：关联用户和租户，定义用户在家庭中的角色和权限
 CREATE TABLE coach_ai_family_members (
@@ -186,19 +216,19 @@ CREATE TABLE coach_ai_family_members (
     -- 外键约束
     CONSTRAINT fk_family_members_tenant_id 
         FOREIGN KEY (tenant_id) 
-        REFERENCES tenants (id) 
+        REFERENCES coach_ai_tenants (id) 
         ON DELETE CASCADE,
     
     CONSTRAINT fk_family_members_user_id 
         FOREIGN KEY (user_id) 
-        REFERENCES users (id) 
+        REFERENCES coach_ai_users (id) 
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='家庭成员关联表';
 ```
 
-### 2.2 业务表结构
+### 2.3 业务表结构设计
 
-#### 2.2.1 作业表（homeworks）
+#### 2.3.1 作业表（coach_ai_homeworks）
 ```sql
 -- 作业表：存储学生作业信息，包括作业内容、状态和批改结果
 CREATE TABLE coach_ai_homeworks (
@@ -266,12 +296,12 @@ CREATE TABLE coach_ai_homeworks (
     -- 外键约束
     CONSTRAINT fk_homeworks_tenant_id 
         FOREIGN KEY (tenant_id) 
-        REFERENCES tenants (id) 
+        REFERENCES coach_ai_tenants (id) 
         ON DELETE CASCADE,
     
     CONSTRAINT fk_homeworks_student_id 
         FOREIGN KEY (student_id) 
-        REFERENCES family_members (id) 
+        REFERENCES coach_ai_family_members (id) 
         ON DELETE CASCADE,
     
     -- 检查约束
@@ -282,7 +312,7 @@ CREATE TABLE coach_ai_homeworks (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='学生作业表';
 ```
 
-#### 2.2.2 运动记录表（exercise_records）
+#### 2.3.2 运动记录表（coach_ai_exercise_records）
 ```sql
 -- 运动记录表：存储学生运动数据，包括运动类型、计数和姿势分析
 CREATE TABLE coach_ai_exercise_records (
@@ -342,58 +372,16 @@ CREATE TABLE coach_ai_exercise_records (
     -- 外键约束
     CONSTRAINT fk_exercise_records_tenant_id 
         FOREIGN KEY (tenant_id) 
-        REFERENCES tenants (id) 
+        REFERENCES coach_ai_tenants (id) 
         ON DELETE CASCADE,
     
     CONSTRAINT fk_exercise_records_student_id 
         FOREIGN KEY (student_id) 
-        REFERENCES family_members (id) 
+        REFERENCES coach_ai_family_members (id) 
         ON DELETE CASCADE,
     
     -- 检查约束
     CHECK (duration_seconds > 0),
     CHECK (count >= 0),
     CHECK (calories_burned IS NULL OR calories_burned >= 0),
-    CHECK (average_heart_rate IS NULL OR average_heart_rate > 0),
-    CHECK (posture_score IS NULL OR (posture_score >= 0 AND posture_score <= 100)),
-    CHECK (incorrect_count IS NULL OR incorrect_count >= 0),
-    CHECK (ended_at > started_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='运动记录表';
-```
-
-#### 2.2.3 成就表（achievements）
-```sql
--- 成就表：存储用户成就信息，包括成就类型、条件和奖励
-CREATE TABLE coach_ai_achievements (
-    -- 主键和标识
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
-    uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '成就唯一标识（UUID）',
-    
-    -- 租户和成员关联
-    tenant_id BIGINT UNSIGNED NOT NULL COMMENT '租户ID，关联tenants表',
-    student_id BIGINT UNSIGNED NOT NULL COMMENT '学生ID，关联family_members表',
-    
-    -- 成就基本信息
-    achievement_type ENUM('homework', 'exercise', 'streak', 'milestone', 'special') NOT NULL COMMENT '成就类型',
-    name VARCHAR(100) NOT NULL COMMENT '成就名称',
-    description TEXT COMMENT '成就描述',
-    icon_url VARCHAR(500) COMMENT '成就图标URL',
-    
-    -- 成就条件
-    condition_type ENUM('count', 'score', 'streak', 'completion', 'custom') NOT NULL COMMENT '条件类型',
-    condition_value JSON NOT NULL COMMENT '条件值',
-    condition_description TEXT COMMENT '条件描述',
-    
-    -- 成就状态
-    is_unlocked BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否已解锁',
-    is_notified BOOLEAN NOT NULL DEFAULT FALSE COMMENT '是否已通知',
-    progress_current INT NOT NULL DEFAULT 0 COMMENT '当前进度',
-    progress_target INT NOT NULL COMMENT '目标进度',
-    
-    -- 奖励信息
-    reward_points INT NOT NULL DEFAULT 0 COMMENT '奖励积分',
-    reward_badge VARCHAR(50) COMMENT '奖励徽章',
-    reward_description TEXT COMMENT '奖励描述',
-    
-    -- 时间信息
-    unlocked_at TIMESTAMP NULL COMMENT '解锁时间',
+    CHECK (average_heart_rate
