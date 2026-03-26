@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-03-25T10:09:25.757150",
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 5,
+    "failed_tests": 2,
+    "success_rate": 71.42857142857143
+  },
+  "details": [
+    {
+      "name": "项目结构检查",
+      "passed": true,
+      "message": "项目结构完整",
+      "details": {}
+    },
+    {
+      "name": "配置文件检查",
+      "passed": true,
+      "message": "所有配置文件正常",
+      "details": {}
+    },
+    {
+      "name": "应用结构检查",
+      "passed": false,
+      "message": "应用文件不存在: accounts/views.py",
+      "details": {}
+    },
+    {
+      "name": "文档检查",
+      "passed": true,
+      "message": "所有文档完整",
+      "details": {}
+    },
+    {
+      "name": "测试基础设施检查",
+      "passed": true,
+      "message": "测试基础设施完整",
+      "details": {}
+    },
+    {
+      "name": "API文档检查",
+      "passed": false,
+      "message": "openapi_spec.json格式错误: Unterminated string starting at: line 653 column 38 (char 20867)",
+      "details": {}
+    },
+    {
+      "name": "业务逻辑检查",
+      "passed": true,
+      "message": "业务逻辑测试通过",
+      "details": {}
+    }
+  ]
+}

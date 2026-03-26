@@ -170,12 +170,13 @@ try:
     from apps.api.views.ai_views import AIRecommendationView
     
     factory = RequestFactory()
+    import json
     request = factory.post(
         "/api/v1/ai/recommendation/",
-        data={
+        data=json.dumps({
             "recommendation_type": "all",
             "max_recommendations": 3,
-        },
+        }),
         content_type="application/json",
     )
     
@@ -210,12 +211,13 @@ try:
     from apps.api.views.ai_views import AIAnalysisView
     
     factory = RequestFactory()
+    import json
     request = factory.post(
         "/api/v1/ai/analysis/",
-        data={
+        data=json.dumps({
             "analysis_type": "comprehensive",
             "period_days": 30,
-        },
+        }),
         content_type="application/json",
     )
     
@@ -248,12 +250,13 @@ try:
     from apps.api.views.ai_views import AIPredictionView
     
     factory = RequestFactory()
+    import json
     request = factory.post(
         "/api/v1/ai/prediction/",
-        data={
+        data=json.dumps({
             "prediction_type": "all",
             "horizon_days": 7,
-        },
+        }),
         content_type="application/json",
     )
     

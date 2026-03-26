@@ -235,11 +235,11 @@ class User(AbstractUser):
         ]
         constraints = [
             models.CheckConstraint(
-                check=models.Q(points__gte=0),
+                condition=models.Q(points__gte=0),
                 name="points_non_negative",
             ),
             models.CheckConstraint(
-                check=models.Q(level__gte=1),
+                condition=models.Q(level__gte=1),
                 name="level_at_least_one",
             ),
         ]
@@ -507,8 +507,9 @@ class FamilyRelationship(models.Model):
         db_table = "accounts_family_relationship"
         unique_together = [["parent", "student"]]
         constraints = [
+            # Django 6.x兼容的CheckConstraint语法
             models.CheckConstraint(
-                check=~models.Q(parent=models.F("student")),
+                condition=~models.Q(parent=models.F("student")),
                 name="parent_not_equal_student",
             ),
         ]
