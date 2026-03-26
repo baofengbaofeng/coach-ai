@@ -1,54 +1,22 @@
-# CoachAI - 智能教育管理SaaS平台
+# CoachAI - AI教练平台
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/downloads/release/python-3120/)
-[![Vue 3](https://img.shields.io/badge/Vue-3-green)](https://vuejs.org/)
-[![MySQL 5.8](https://img.shields.io/badge/MySQL-5.8-orange)](https://dev.mysql.com/doc/relnotes/mysql/5.8/en/)
+CoachAI是一个基于人工智能的教练平台，提供个性化的教练服务和智能分析。
 
-## 📋 项目概述
-
-**CoachAI** 是一个面向中国家庭的智能教育管理SaaS平台，通过硬件外设（摄像头、麦克风）和AI技术（图像识别、动作识别）帮助家长管理子女的学习和运动。系统采用多租户架构，每个家庭作为一个独立租户，支持家庭成员角色定义和管理。
-
-### 🎯 核心价值
-- **作业批改自动化** - 通过摄像头采集作业图像，AI自动批改和分析
-- **运动计数智能化** - 通过摄像头识别动作，自动计数和姿势指导
-- **家庭教育管理** - 家长全面掌握子女学习和运动情况
-- **亲子互动增强** - 家长和孩子通过系统互动，改善亲子关系
-- **成长数据跟踪** - 记录学习和运动数据，提供成长报告
-
-### 👥 目标用户
-- **家庭管理员** - 家长，购买决策者，账户管理者，主要使用者
-- **学生成员** - 子女，实际使用者，作业完成和运动执行
-- **辅助成员** - 其他家庭成员，可能协助监督或查看报告
-
-## 🏗️ 技术架构
-
-### 架构设计
-- **架构模式**: DDD（领域驱动设计）+ EDA（事件驱动架构）
-- **部署模式**: SaaS多租户，前后端统一部署
-- **访问方式**: 仅支持移动端H5访问，优化移动体验
+## 项目架构
 
 ### 技术栈
-| 组件 | 技术选型 | 版本 | 说明 |
-|------|----------|------|------|
-| **后端** | Python + Tornado | 3.12 + 最新 | 异步高性能Web框架 |
-| **前端** | Vue 3纯脚本 | 3.x | 无需Node.js编译，直接浏览器运行 |
-| **数据库** | MySQL | 5.8+ | 关系型数据库，支持多租户数据隔离 |
-| **缓存** | Redis | 最新 | 会话缓存和数据缓存 |
-| **消息队列** | RabbitMQ | 最新 | 事件驱动架构的消息中间件 |
-| **容器化** | Docker + Docker Compose | 最新 | 容器化部署和编排 |
-| **监控** | Prometheus + Grafana | 最新 | 系统监控和可视化 |
+- **后端框架**: Python + Tornado
+- **数据库**: MySQL 5.8+（多租户数据隔离）
+- **缓存**: Redis
+- **消息队列**: RabbitMQ（事件驱动架构）
+- **前端**: Vue 3纯脚本（code/web/目录）
 
 ### 项目结构
 ```
 coach-ai/
-├── .rules/                    # 编码规范目录
-│   └── coding-style.md       # 项目编码规范
-├── docs/                     # 文档目录
-│   ├── pm/                  # 产品文档（9个）
-│   └── rd/                  # 技术文档（2个）
 ├── code/                     # 源代码目录（按DDD架构）
 │   ├── main.py              # 应用入口
+│   ├── config.py            # 配置文件
 │   ├── tornado/             # Tornado后端核心
 │   │   ├── core/           # 核心基础（中间件/异常/认证）
 │   │   ├── modules/        # 按业务拆分模块（DDD领域）
@@ -58,244 +26,226 @@ coach-ai/
 │   └── web/                # 前端代码（Vue 3纯脚本）
 ├── tests/                   # 测试目录
 ├── deploy/                  # 部署配置
-├── .gitignore              # Git忽略文件
-├── LICENSE                 # 开源许可证（GPL v3）
-└── README.md               # 项目说明文档（本文档）
+├── docs/                   # 文档目录
+├── requirements.txt        # Python依赖
+├── .env.example           # 环境变量示例
+├── setup.py              # 项目安装配置
+└── README.md             # 项目说明
 ```
 
-## 🚀 快速开始
+## 编码规范
+
+### 语言要求
+1. **代码注释**: 必须使用中文
+2. **日志输出**: 必须使用英文（禁止中文日志）
+3. **异常消息**: 必须使用英文（禁止中文异常）
+4. **文档编写**: 技术文档使用中文
+
+### 代码风格
+- 遵循PEP 8规范
+- 使用类型注解
+- 模块化设计，高内聚低耦合
+- 统一的错误处理机制
+
+## 快速开始
 
 ### 环境要求
-- **Python**: 3.12.0+
-- **MySQL**: 5.8+
-- **Redis**: 6.0+
-- **Docker**: 20.10+（可选，用于容器化部署）
+- Python 3.8+
+- MySQL 5.8+
+- Redis 6.0+
+- RabbitMQ 3.8+
 
-### 开发环境搭建
-```bash
-# 1. 克隆项目
-git clone https://github.com/baofengbaofeng/coach-ai.git
-cd coach-ai
+### 安装步骤
 
-# 2. 创建Python虚拟环境
-python3.12 -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或 venv\Scripts\activate  # Windows
+1. **克隆项目**
+   ```bash
+   git clone <repository-url>
+   cd coach-ai
+   ```
 
-# 3. 安装依赖
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+2. **创建虚拟环境**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # 或
+   venv\Scripts\activate     # Windows
+   ```
 
-# 4. 配置环境变量
-cp .env.example .env
-# 编辑 .env 文件，配置数据库连接等
+3. **安装依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# 5. 初始化数据库
-python scripts/init_database.py
+4. **配置环境变量**
+   ```bash
+   cp .env.example .env
+   # 编辑.env文件，配置数据库、Redis等连接信息
+   ```
 
-# 6. 启动开发服务器
-python code/main.py
-```
+5. **初始化数据库**
+   ```bash
+   # 创建数据库
+   mysql -u root -p -e "CREATE DATABASE coach_ai CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   
+   # 创建用户（根据.env配置）
+   mysql -u root -p -e "CREATE USER 'coach_ai_user'@'localhost' IDENTIFIED BY 'your_password';"
+   mysql -u root -p -e "GRANT ALL PRIVILEGES ON coach_ai.* TO 'coach_ai_user'@'localhost';"
+   mysql -u root -p -e "FLUSH PRIVILEGES;"
+   ```
 
-### 生产环境部署
-```bash
-# 使用Docker Compose部署
-docker-compose -f deploy/docker-compose.prod.yml up -d
+6. **启动服务**
+   ```bash
+   python code/main.py
+   ```
 
-# 查看服务状态
-docker-compose -f deploy/docker-compose.prod.yml ps
+7. **验证服务**
+   ```bash
+   curl http://localhost:8888/api/health
+   ```
 
-# 查看日志
-docker-compose -f deploy/docker-compose.prod.yml logs -f
-```
+## 开发指南
 
-## 📖 功能模块
+### 项目结构说明
 
-### 1. SaaS多租户管理
-- **家庭租户注册与创建**：家庭管理员创建家庭账户
-- **家庭成员管理**：添加、删除、管理家庭成员
-- **租户数据隔离**：确保每个家庭数据安全隔离
-- **角色权限控制**：基于角色的权限管理系统
+#### 核心模块 (tornado/core/)
+- **base_handler.py**: 基础Handler类，所有Handler的基类
+- **exceptions.py**: 自定义异常类
+- **error_handler.py**: 统一错误处理器
+- **middleware.py**: 中间件（日志、租户、CORS等）
+- **application.py**: 应用工厂，创建Tornado应用实例
 
-### 2. 作业批改系统
-- **作业图片上传**：支持拍照或相册选择
-- **OCR文字识别**：自动识别作业内容
-- **自动批改**：AI自动批改作业并评分
-- **错题分析**：分析错题原因和知识点
-- **学习报告**：生成学习进度和薄弱点报告
+#### 数据库模块 (database/)
+- **connection.py**: 数据库连接管理器，支持多租户
+- **redis_client.py**: Redis客户端管理器
 
-### 3. 运动计数系统
-- **运动类型识别**：识别跳绳、拍球等常见运动
-- **实时计数**：通过摄像头实时计数运动次数
-- **姿势指导**：分析运动姿势，提供改进建议
-- **运动记录**：记录运动数据和历史
-- **运动报告**：生成运动统计和进步报告
+#### 工具模块 (tornado/utils/)
+- **jwt_utils.py**: JWT令牌工具
+- **password_utils.py**: 密码哈希和验证工具
 
-### 4. 成就与激励系统
-- **成就系统**：设置学习成就和运动成就
-- **积分体系**：完成任务的积分奖励
-- **排行榜**：家庭内和全平台排行榜
-- **奖励机制**：积分兑换奖励和特权
+#### 业务模块 (tornado/modules/)
+- 按DDD领域划分的业务模块（待实现）
 
-### 5. 家长控制面板
-- **学习监督**：查看子女学习进度和作业情况
-- **运动监督**：查看子女运动记录和进步
-- **时间管理**：设置学习和运动时间限制
-- **报告查看**：查看详细的学习和运动报告
+#### 基础设施 (tornado/infrastructure/)
+- 外部服务集成、消息队列等（待实现）
 
-## 🔧 开发规范
+### 创建新模块
 
-### 代码规范
-- **Python代码**：遵循PEP8规范，使用`.rules/coding-style.md`项目规范
-- **前端代码**：遵循Vue 3最佳实践，组件化开发
-- **数据库设计**：遵循数据库设计规范，合理使用索引
+1. **在modules目录下创建新模块**
+   ```bash
+   mkdir -p code/tornado/modules/auth
+   ```
 
-### 语言规范
-- **代码注释**：必须使用中文编写注释
-- **日志输出**：必须使用英文输出日志
-- **异常消息**：必须使用英文抛出异常消息
-- **文档编写**：技术文档使用中文，API文档使用中英双语
+2. **创建模块文件**
+   ```python
+   # code/tornado/modules/auth/__init__.py
+   from tornado.web import url
+   
+   def get_routes():
+       from .handlers import LoginHandler, RegisterHandler
+       
+       return [
+           url(r"/api/auth/login", LoginHandler, name="auth_login"),
+           url(r"/api/auth/register", RegisterHandler, name="auth_register"),
+       ]
+   ```
 
-### Git规范
-- **分支命名**：`feature/功能名`、`fix/问题描述`、`hotfix/紧急修复`
-- **提交信息**：遵循Conventional Commits规范
-- **代码审查**：所有代码必须经过Code Review才能合并
-- **版本管理**：遵循语义化版本控制（SemVer）
+3. **注册路由**
+   在`code/tornado/modules/__init__.py`中导入新模块的路由
 
-## 🧪 测试
-
-### 测试策略
-- **单元测试**：使用pytest框架，覆盖率>85%
-- **集成测试**：测试模块间集成，覆盖率>90%
-- **系统测试**：端到端测试完整用户流程
-- **性能测试**：使用JMeter进行性能压力测试
-- **安全测试**：定期进行安全漏洞扫描
-
-### 测试运行
+### 测试
+项目使用pytest进行测试：
 ```bash
 # 运行所有测试
-pytest tests/
+pytest
 
-# 运行单元测试
+# 运行特定测试
 pytest tests/unit/
 
-# 运行集成测试
-pytest tests/integration/
-
-# 生成测试报告
-pytest tests/ --html=reports/test_report.html
+# 生成测试覆盖率报告
+pytest --cov=code tests/
 ```
 
-## 📊 项目状态
+## 部署
 
-### 当前进度
-- ✅ **产品文档**：9个产品文档完成（100%）
-- ✅ **技术文档**：2个技术文档完成（100%）
-- ✅ **开发计划**：24天详细开发计划制定（100%）
-- ⏳ **框架搭建**：进行中（第1阶段第1天）
-- ⏳ **核心开发**：待开始（第2阶段）
-- ⏳ **前端开发**：待开始（第3阶段）
-- ⏳ **AI集成**：待开始（第4阶段）
-- ⏳ **测试部署**：待开始（第5-6阶段）
+### 生产环境配置
+1. 设置`APP_ENV=production`
+2. 配置强密码和密钥
+3. 启用HTTPS
+4. 配置防火墙规则
+5. 设置监控和告警
 
-### 开发里程碑
-| 里程碑 | 目标 | 预计完成时间 |
-|--------|------|--------------|
-| **M1** | 基础架构完成 | 2026-03-29 |
-| **M2** | 核心功能完成 | 2026-04-05 |
-| **M3** | 前端界面完成 | 2026-04-10 |
-| **M4** | AI功能集成完成 | 2026-04-14 |
-| **M5** | 系统测试完成 | 2026-04-17 |
-| **M6** | MVP版本上线 | 2026-04-19 |
+### Docker部署
+```dockerfile
+# Dockerfile示例
+FROM python:3.9-slim
 
-## 👥 团队协作
+WORKDIR /app
 
-### 团队分工
-- **PM（产品经理）**：产品需求、文档管理、需求对齐
-- **RD（研发专家）**：技术方案、开发实施、技术决策
-- **FE（前端工程师）**：前端技术、界面设计、用户体验
-- **QA（质量保证）**：测试计划、质量保证、缺陷管理
-- **CR（代码审查）**：代码审查、规范检查、质量评估
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-### 沟通协作
-- **每日站会**：9:00-9:15，同步进展和问题
-- **周例会**：每周一10:00，总结上周，计划本周
-- **代码审查**：每日进行代码审查会议
-- **文档管理**：使用Git管理所有文档，确保版本一致
+COPY . .
 
-## 📄 文档体系
+CMD ["python", "code/main.py"]
+```
 
-### 产品文档（docs/pm/）
-1. 《CoachAI项目产品愿景》
-2. 《CoachAI项目产品路线图》
-3. 《CoachAI业务需求文档（BRD）》
-4. 《CoachAI产品需求文档（PRD）》
-5. 《CoachAI项目用户画像》
-6. 《CoachAI项目产品经理工作指南》
-7. 《CoachAI项目产品经理待办事项》
-8. 《CoachAI项目产品文档体系》
-9. 《产品文档创建总结》
+## API文档
 
-### 技术文档（docs/rd/）
-1. 《CoachAI技术架构概要设计》
-2. 《CoachAI技术架构详细设计》
+### 健康检查
+- `GET /api/health` - 服务健康状态
+- `GET /api/health/db` - 数据库健康状态
+- `GET /api/health/redis` - Redis健康状态
 
-### 其他文档
-- **项目研发里程碑计划**：详细开发计划和时间表
-- **编码规范**：项目编码规范和最佳实践
-- **API文档**：RESTful API接口文档（待生成）
-- **部署文档**：部署和运维指南（待生成）
+### 响应格式
 
-## 🤝 贡献指南
+#### 成功响应
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": {...},
+  "timestamp": 1234567890.123
+}
+```
 
-### 贡献流程
-1. **Fork项目**：Fork本仓库到自己的账户
-2. **创建分支**：从main分支创建功能分支
-3. **开发功能**：在分支上开发新功能或修复问题
-4. **编写测试**：为代码编写相应的测试用例
-5. **提交代码**：遵循提交规范提交代码
-6. **创建PR**：创建Pull Request到main分支
-7. **代码审查**：通过代码审查后合并
+#### 错误响应
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Error message",
+    "details": {...}
+  },
+  "timestamp": 1234567890.123
+}
+```
 
-### 贡献要求
-- 遵循项目编码规范和语言规范
-- 为新功能编写完整的测试用例
-- 更新相关文档（如有需要）
-- 确保代码通过所有测试
-- 遵循Git提交规范
+## 贡献指南
 
-## 📞 联系方式
+1. Fork项目
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
 
-### 项目信息
-- **项目名称**: CoachAI - 智能教育管理SaaS平台
-- **项目仓库**: https://github.com/baofengbaofeng/coach-ai.git
-- **许可证**: GNU General Public License v3.0
-- **版权声明**: © 2026 CoachAI项目团队
+## 许可证
 
-### 负责人
-- **项目发起人**: 鲍锋
-- **产品经理**: PM subagent
-- **研发专家**: RD subagent
-- **前端工程师**: FE subagent
-- **质量保证**: QA subagent
-- **代码审查**: CR subagent
+本项目采用MIT许可证 - 查看LICENSE文件了解详情
 
-### 问题反馈
-- **GitHub Issues**: 提交功能请求或问题报告
-- **文档问题**: 在相关文档中提出修改建议
-- **安全漏洞**: 通过安全渠道报告安全漏洞
+## 联系方式
 
-## 📜 许可证
+- 项目维护: team@coach-ai.com
+- 问题反馈: [GitHub Issues](<repository-url>/issues)
 
-本项目采用 **GNU General Public License v3.0** 开源许可证。详细信息请查看 [LICENSE](LICENSE) 文件。
+## 更新日志
 
-### 重要说明
-1. 本项目采用GPL v3开源许可证，使用本项目代码需遵守GPL v3条款
-2. 商业使用需注意GPL v3的传染性条款
-3. 贡献代码默认接受GPL v3许可证
-4. 详细的项目文档请参阅docs/目录
-
----
-**最后更新**: 2026-03-26  
-**版本**: v1.0.0  
-**状态**: 开发中 🚧
+### v1.0.0 (2026-03-27)
+- 项目初始化
+- 基础框架搭建
+- Tornado后端核心
+- 数据库连接和多租户支持
+- Redis缓存集成
+- 统一的错误处理和日志系统
+- JWT认证基础
+- 健康检查端点

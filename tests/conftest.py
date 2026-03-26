@@ -9,6 +9,10 @@ import pytest
 import sys
 import os
 import logging
+import asyncio
+from typing import Generator, AsyncGenerator
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -16,6 +20,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # 配置测试日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# 测试数据库配置
+TEST_DATABASE_URL = "sqlite:///:memory:"
+# 对于MySQL测试，可以使用：
+# TEST_DATABASE_URL = "mysql+pymysql://test:test@localhost/test_coach_ai?charset=utf8mb4"
 
 
 @pytest.fixture
@@ -178,6 +187,127 @@ class TestDataError(Exception):
     pass
 
 
+# 数据库测试fixtures
+@pytest.fixture(scope="session")
+def test_engine():
+    """
+    创建测试数据库引擎
+    
+    返回:
+        Engine: SQLAlchemy引擎实例
+    """
+    engine = create_engine(
+        TEST_DATABASE_URL,
+        echo=False,
+        future=True
+    )
+    logger.info("Test database engine created")
+    return engine
+
+
+@pytest.fixture(scope="session")
+def test_session_factory(test_engine):
+    """
+    创建测试会话工厂
+    
+    参数:
+        test_engine: 测试数据库引擎
+        
+    返回:
+        sessionmaker: SQLAlchemy会话工厂
+    """
+    return sessionmaker(
+        bind=test_engine,
+        autocommit=False,
+        autoflush=False,
+        expire_on_commit=False,
+        future=True
+    )
+
+
+@pytest.fixture
+def db_session(test_session_factory) -> Generator[Session, None, None]:
+    """
+    提供数据库会话的fixture
+    
+    参数:
+        test_session_factory: 测试会话工厂
+        
+    返回:
+        Generator[Session, None, None]: 数据库会话生成器
+    """
+    session = test_session_factory()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """
+    为异步测试提供事件循环
+    
+    返回:
+        asyncio.AbstractEventLoop: 事件循环实例
+    """
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+# API测试fixtures
+@pytest.fixture
+def auth_headers():
+    """
+    提供认证头部的fixture
+    
+    返回:
+        dict: 包含认证头部的字典
+    """
+    return {
+        "Authorization": "Bearer test_jwt_token",
+        "Content-Type": "application/json"
+    }
+
+
+@pytest.fixture
+def test_user_data():
+    """
+    测试用户数据
+    
+    返回:
+        dict: 测试用户数据
+    """
+    return {
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "Test@123456",
+        "full_name": "测试用户"
+    }
+
+
+@pytest.fixture
+def test_tenant_data():
+    """
+    测试租户数据
+    
+    返回:
+        dict: 测试租户数据
+    """
+    return {
+        "name": "测试租户",
+        "slug": "test-tenant",
+        "description": "这是一个测试租户",
+        "contact_email": "contact@test.com",
+        "contact_phone": "13800138000"
+    }
+
+
 # 辅助函数
 def validate_test_data(data: dict, required_fields: list) -> bool:
     """
@@ -207,3 +337,65 @@ def validate_test_data(data: dict, required_fields: list) -> bool:
     
     logger.info("Test data validation passed")  # 日志使用英文
     return True
+
+
+def create_test_user(session, user_data=None):
+    """
+    创建测试用户
+    
+    参数:
+        session: 数据库会话
+        user_data: 用户数据，如果为None则使用默认数据
+        
+    返回:
+        User: 创建的测试用户
+    """
+    from coachai_code.tornado.modules.auth.models import User
+    from coachai_code.tornado.utils.password_utils import hash_password
+    
+    if user_data is None:
+        user_data = {
+            "username": "testuser",
+            "email": "test@example.com",
+            "password_hash": hash_password("Test@123456"),
+            "full_name": "测试用户",
+            "is_active": True
+        }
+    
+    user = User(**user_data)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    
+    return user
+
+
+def create_test_tenant(session, tenant_data=None, created_by=None):
+    """
+    创建测试租户
+    
+    参数:
+        session: 数据库会话
+        tenant_data: 租户数据，如果为None则使用默认数据
+        created_by: 创建者用户ID
+        
+    返回:
+        Tenant: 创建的测试租户
+    """
+    from coachai_code.tornado.modules.tenant.models import Tenant
+    
+    if tenant_data is None:
+        tenant_data = {
+            "name": "测试租户",
+            "slug": "test-tenant",
+            "description": "这是一个测试租户",
+            "contact_email": "contact@test.com",
+            "created_by": created_by
+        }
+    
+    tenant = Tenant(**tenant_data)
+    session.add(tenant)
+    session.commit()
+    session.refresh(tenant)
+    
+    return tenant
