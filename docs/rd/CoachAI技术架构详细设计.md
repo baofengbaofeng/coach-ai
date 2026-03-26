@@ -704,4 +704,997 @@ http {
         }
         
         # API路由
-        location /api
+        location /api# CoachAI 技术架构详细设计（续写部分）
+
+## 第 7 章 数据存储设计（续）
+
+### 7.4 索引设计与优化
+
+#### 7.4.1 索引设计原则
+1. **主键索引**：所有表必须有主键索引
+2. **唯一索引**：唯一约束字段建立唯一索引
+3. **外键索引**：所有外键字段建立索引
+4. **查询索引**：频繁查询条件字段建立索引
+5. **组合索引**：多条件查询建立组合索引
+
+#### 7.4.2 核心表索引设计
+```sql
+-- 用户表索引
+CREATE INDEX idx_users_tenant_id ON coach_ai_users(tenant_id);
+CREATE INDEX idx_users_created_at ON coach_ai_users(created_at);
+CREATE INDEX idx_users_status ON coach_ai_users(is_active, is_verified, is_locked);
+
+-- 作业表索引
+CREATE INDEX idx_homeworks_tenant_student ON coach_ai_homeworks(tenant_id, student_id);
+CREATE INDEX idx_homeworks_subject_status ON coach_ai_homeworks(subject, status);
+CREATE INDEX idx_homeworks_submitted_at ON coach_ai_homeworks(submitted_at);
+
+-- 运动记录表索引
+CREATE INDEX idx_exercise_tenant_student ON coach_ai_exercise_records(tenant_id, student_id);
+CREATE INDEX idx_exercise_type_date ON coach_ai_exercise_records(exercise_type, started_at);
+```
+
+#### 7.4.3 索引优化策略
+1. **覆盖索引**：查询只通过索引就能返回所需数据
+2. **前缀索引**：对长字符串字段使用前缀索引
+3. **索引合并**：MySQL自动合并多个单列索引
+4. **索引下推**：在存储引擎层过滤数据
+
+### 7.5 缓存设计（Redis策略）
+
+#### 7.5.1 缓存层级设计
+1. **L1缓存**：应用内存缓存（LRU Cache）
+2. **L2缓存**：Redis分布式缓存
+3. **L3缓存**：数据库查询缓存
+
+#### 7.5.2 Redis缓存策略
+```python
+# code/tornado/infrastructure/cache/redis_client.py
+import redis
+import json
+from typing import Optional, Any
+import asyncio
+
+class RedisCache:
+    """Redis缓存客户端"""
+    
+    def __init__(self, host: str = 'localhost', port: int = 6379, db: int = 0):
+        self.redis = redis.Redis(
+            host=host,
+            port=port,
+            db=db,
+            decode_responses=True,
+            socket_connect_timeout=5,
+            socket_timeout=5,
+            retry_on_timeout=True
+        )
+    
+    async def get(self, key: str) -> Optional[Any]:
+        """获取缓存"""
+        try:
+            value = await asyncio.get_event_loop().run_in_executor(
+                None, self.redis.get, key
+            )
+            if value:
+                return json.loads(value)
+            return None
+        except Exception as e:
+            # 缓存失败不影响主流程
+            return None
+    
+    async def set(self, key: str, value: Any, expire: int = 3600) -> bool:
+        """设置缓存"""
+        try:
+            json_value = json.dumps(value, ensure_ascii=False)
+            return await asyncio.get_event_loop().run_in_executor(
+                None, self.redis.setex, key, expire, json_value
+            )
+        except Exception as e:
+            return False
+    
+    async def delete(self, key: str) -> bool:
+        """删除缓存"""
+        try:
+            return await asyncio.get_event_loop().run_in_executor(
+                None, self.redis.delete, key
+            ) > 0
+        except Exception as e:
+            return False
+    
+    async def clear_pattern(self, pattern: str) -> int:
+        """清除匹配模式的缓存"""
+        try:
+            keys = await asyncio.get_event_loop().run_in_executor(
+                None, self.redis.keys, pattern
+            )
+            if keys:
+                return await asyncio.get_event_loop().run_in_executor(
+                    None, self.redis.delete, *keys
+                )
+            return 0
+        except Exception as e:
+            return 0
+```
+
+#### 7.5.3 缓存使用场景
+1. **用户会话缓存**：JWT Token、用户信息
+2. **配置信息缓存**：系统配置、租户配置
+3. **热点数据缓存**：频繁查询的业务数据
+4. **计算结果缓存**：OCR结果、运动分析结果
+5. **分布式锁**：防止重复操作、并发控制
+
+#### 7.5.4 缓存失效策略
+1. **时间失效**：设置合理的过期时间
+2. **事件失效**：数据变更时主动清除缓存
+3. **版本失效**：缓存键包含数据版本号
+4. **容量失效**：LRU算法淘汰旧缓存
+
+### 7.6 数据备份与恢复方案
+
+#### 7.6.1 备份策略
+1. **全量备份**：每日凌晨进行全量备份
+2. **增量备份**：每小时进行增量备份
+3. **日志备份**：实时备份二进制日志
+4. **异地备份**：备份数据存储到异地
+
+#### 7.6.2 备份工具
+- **mysqldump**：逻辑备份，适合小数据量
+- **xtrabackup**：物理备份，适合大数据量
+- **MySQL Enterprise Backup**：企业级备份工具
+
+#### 7.6.3 恢复方案
+1. **全量恢复**：从全量备份恢复
+2. **时间点恢复**：结合全量备份和二进制日志
+3. **表级恢复**：恢复单个表或数据库
+4. **演练测试**：定期进行恢复演练
+
+### 7.7 数据迁移方案
+
+#### 7.7.1 迁移工具
+- **Alembic**：SQLAlchemy数据库迁移工具
+- **Flyway**：数据库版本控制工具
+- **自定义脚本**：复杂迁移场景
+
+#### 7.7.2 迁移流程
+1. **开发环境**：开发人员本地迁移
+2. **测试环境**：自动化测试验证
+3. **预发布环境**：生产数据验证
+4. **生产环境**：低峰期执行迁移
+
+#### 7.7.3 回滚方案
+1. **向前兼容**：新版本兼容旧数据
+2. **版本回退**：回退到上一个版本
+3. **数据回滚**：从备份恢复数据
+4. **灰度发布**：逐步验证迁移效果
+
+## 第 8 章 非功能需求设计
+
+### 8.1 性能设计
+
+#### 8.1.1 并发能力
+- **目标**：支持1000并发用户
+- **措施**：
+  - Tornado异步框架，单进程支持数千连接
+  - 数据库连接池，减少连接创建开销
+  - Redis缓存，减少数据库压力
+  - CDN加速，减少网络延迟
+
+#### 8.1.2 接口响应时间
+- **目标**：API响应时间<100ms
+- **措施**：
+  - 数据库查询优化，使用索引
+  - 多级缓存策略，减少IO操作
+  - 异步处理，非阻塞IO
+  - 代码优化，减少计算复杂度
+
+#### 8.1.3 性能优化方案
+1. **数据库优化**：
+   - 查询优化，避免全表扫描
+   - 索引优化，覆盖索引
+   - 分库分表，水平扩展
+   - 读写分离，负载均衡
+
+2. **缓存优化**：
+   - 热点数据缓存
+   - 查询结果缓存
+   - 页面片段缓存
+   - CDN静态资源缓存
+
+3. **代码优化**：
+   - 异步编程，避免阻塞
+   - 算法优化，减少复杂度
+   - 内存管理，避免泄漏
+   - 连接复用，减少开销
+
+### 8.2 安全设计
+
+#### 8.2.1 身份认证
+- **JWT Token**：无状态认证，支持分布式
+- **多因素认证**：短信验证码、邮箱验证
+- **会话管理**：Token刷新、超时控制
+- **防暴力破解**：登录失败次数限制
+
+#### 8.2.2 接口权限控制
+- **RBAC模型**：基于角色的访问控制
+- **数据权限**：租户级数据隔离
+- **操作权限**：细粒度操作控制
+- **API权限**：接口级别权限验证
+
+#### 8.2.3 安全防护
+1. **SQL注入防护**：
+   - 参数化查询
+   - ORM框架防护
+   - 输入验证过滤
+
+2. **XSS防护**：
+   - 输入输出编码
+   - CSP安全策略
+   - 内容安全过滤
+
+3. **CSRF防护**：
+   - Token验证
+   - SameSite Cookie
+   - Referer检查
+
+4. **文件上传安全**：
+   - 文件类型验证
+   - 文件大小限制
+   - 病毒扫描
+   - 存储隔离
+
+#### 8.2.4 密码加密
+- **算法**：bcrypt + salt
+- **强度**：最小8位，包含大小写数字
+- **策略**：定期更换，历史密码检查
+- **存储**：加密存储，不可逆
+
+#### 8.2.5 敏感数据脱敏
+- **个人信息**：手机号、邮箱部分隐藏
+- **支付信息**：银行卡号加密存储
+- **日志脱敏**：敏感信息不记录日志
+- **数据传输**：HTTPS加密传输
+
+### 8.3 高可用设计
+
+#### 8.3.1 服务容错
+- **健康检查**：定期检查服务状态
+- **故障转移**：自动切换到备用节点
+- **服务降级**：非核心功能降级处理
+- **熔断机制**：防止雪崩效应
+
+#### 8.3.2 重试/降级机制
+1. **重试策略**：
+   - 指数退避重试
+   - 最大重试次数限制
+   - 重试条件判断
+
+2. **降级策略**：
+   - 功能降级：关闭非核心功能
+   - 数据降级：返回缓存数据
+   - 服务降级：调用备用服务
+
+#### 8.3.3 单点故障规避
+1. **无状态设计**：服务无状态，支持水平扩展
+2. **多副本部署**：关键服务多副本部署
+3. **负载均衡**：多节点负载均衡
+4. **数据冗余**：数据多副本存储
+
+### 8.4 可扩展性设计
+
+#### 8.4.1 模块化设计
+- **微服务就绪**：模块可独立部署
+- **领域驱动**：按业务领域划分模块
+- **接口标准化**：标准化模块间接口
+- **依赖管理**：清晰模块依赖关系
+
+#### 8.4.2 水平扩展方案
+1. **应用层扩展**：
+   - 无状态应用，支持水平扩展
+   - 负载均衡，流量分发
+   - 服务发现，动态扩缩容
+
+2. **数据层扩展**：
+   - 读写分离，主从复制
+   - 分库分表，数据分片
+   - 缓存集群，分布式缓存
+
+3. **存储层扩展**：
+   - 对象存储，无限扩展
+   - CDN加速，全球分发
+   - 文件分片，并行处理
+
+## 第 9 章 部署与运维设计
+
+### 9.1 环境规划
+
+#### 9.1.1 开发环境
+- **目的**：开发人员本地开发调试
+- **配置**：本地Docker环境
+- **数据库**：本地MySQL实例
+- **部署**：Docker Compose一键部署
+
+#### 9.1.2 测试环境
+- **目的**：自动化测试、集成测试
+- **配置**：与生产环境一致
+- **数据**：测试数据，定期清理
+- **部署**：CI/CD自动部署
+
+#### 9.1.3 预发布环境
+- **目的**：生产前验证
+- **配置**：与生产环境完全一致
+- **数据**：生产数据副本
+- **部署**：手动部署，严格验证
+
+#### 9.1.4 生产环境
+- **目的**：线上服务
+- **配置**：高可用集群配置
+- **数据**：生产真实数据
+- **部署**：蓝绿部署，滚动更新
+
+### 9.2 容器化部署（Docker）
+
+#### 9.2.1 Dockerfile
+```dockerfile
+# 基础镜像
+FROM python:3.12-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制应用代码
+COPY . .
+
+# 复制前端代码
+COPY web/ /app/web/
+
+# 创建非root用户
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+# 暴露端口
+EXPOSE 8000
+
+# 启动命令
+CMD ["gunicorn", "code.main:app", \
+     "--workers", "4", \
+     "--worker-class", "tornado", \
+     "--bind", "0.0.0.0:8000", \
+     "--timeout", "120", \
+     "--access-logfile", "-"]
+```
+
+#### 9.2.2 Docker Compose配置
+```yaml
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:5.8
+    container_name: coachai-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: coachai
+      MYSQL_USER: coachai
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./deploy/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - coachai-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: coachai-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - coachai-network
+    command: redis-server --appendonly yes
+
+  # 应用服务
+  app:
+    build: .
+    container_name: coachai-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      DATABASE_URL: mysql+pymysql://coachai:${MYSQL_PASSWORD}@mysql:3306/coachai
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    networks:
+      - coachai-network
+    restart: unless-stopped
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: coachai-nginx
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./deploy/nginx/ssl:/etc/nginx/ssl
+      - ./web:/var/www/coachai/web
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - coachai-network
+
+networks:
+  coachai-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+```
+
+### 9.3 服务编排
+
+#### 9.3.1 开发环境编排
+- **单节点部署**：所有服务部署在单台机器
+- **本地开发**：支持热重载，快速迭代
+- **数据持久化**：数据卷挂载，数据不丢失
+
+#### 9.3.2 生产环境编排
+- **多节点集群**：服务分布式部署
+- **负载均衡**：Nginx + 应用集群
+- **数据高可用**：MySQL主从 + Redis集群
+- **监控告警**：Prometheus + Grafana + Alertmanager
+
+### 9.4 CI/CD持续集成流程
+
+#### 9.4.1 流水线设计
+1. **代码提交**：触发CI/CD流水线
+2. **代码检查**：代码规范、安全扫描
+3. **单元测试**：自动化单元测试
+4. **构建镜像**：Docker镜像构建
+5. **集成测试**：容器化集成测试
+6. **部署测试**：部署到测试环境
+7. **自动化测试**：接口测试、性能测试
+8. **生产部署**：蓝绿部署、滚动更新
+
+#### 9.4.2 GitLab CI配置
+```yaml
+stages:
+  - check
+  - test
+  - build
+  - deploy-test
+  - deploy-prod
+
+variables:
+  DOCK## 第 10 章 监控与日志设计
+
+### 10.1 日志规范
+
+#### 10.1.1 日志级别
+- **DEBUG**：调试信息，开发环境使用
+- **INFO**：普通信息，记录正常操作
+- **WARNING**：警告信息，需要注意但不影响运行
+- **ERROR**：错误信息，影响单个请求
+- **CRITICAL**：严重错误，影响系统运行
+
+#### 10.1.2 日志格式
+```python
+# code/tornado/core/logging.py
+import logging
+import structlog
+from datetime import datetime
+import json
+
+def setup_logging():
+    """配置结构化日志"""
+    
+    # 基础日志配置
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    # 结构化日志配置
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.processors.JSONRenderer()
+        ],
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
+    
+    return structlog.get_logger()
+
+# 使用示例
+logger = setup_logging()
+
+# 结构化日志记录
+logger.info("用户登录成功", 
+           user_id=123, 
+           ip="192.168.1.100", 
+           duration=0.15)
+
+logger.error("数据库连接失败",
+            error="Connection refused",
+            retry_count=3,
+            endpoint="mysql://localhost:3306")
+```
+
+#### 10.1.3 日志内容规范
+1. **请求日志**：记录所有API请求和响应
+2. **业务日志**：记录关键业务操作
+3. **错误日志**：记录所有异常和错误
+4. **性能日志**：记录接口响应时间、数据库查询时间
+5. **审计日志**：记录敏感操作，用于安全审计
+
+### 10.2 日志收集与存储
+
+#### 10.2.1 日志收集方案
+- **文件日志**：本地文件存储，按日期分割
+- **集中日志**：ELK Stack（Elasticsearch + Logstash + Kibana）
+- **云日志**：阿里云SLS、腾讯云CLS
+- **实时日志**：WebSocket实时推送
+
+#### 10.2.2 日志存储策略
+1. **热数据**：最近7天日志，快速查询
+2. **温数据**：7-30天日志，压缩存储
+3. **冷数据**：30天以上日志，归档存储
+4. **永久存储**：审计日志永久保存
+
+#### 10.2.3 日志轮转配置
+```python
+# logging配置文件
+import logging.handlers
+
+# 文件处理器
+file_handler = logging.handlers.RotatingFileHandler(
+    filename='logs/app.log',
+    maxBytes=10485760,  # 10MB
+    backupCount=10,
+    encoding='utf-8'
+)
+
+# 时间轮转处理器
+time_handler = logging.handlers.TimedRotatingFileHandler(
+    filename='logs/app.log',
+    when='midnight',  # 每天轮转
+    interval=1,
+    backupCount=30,   # 保留30天
+    encoding='utf-8'
+)
+```
+
+### 10.3 系统监控指标
+
+#### 10.3.1 基础监控
+1. **CPU使用率**：系统CPU使用情况
+2. **内存使用率**：系统内存使用情况
+3. **磁盘使用率**：磁盘空间使用情况
+4. **网络流量**：网络流入流出流量
+5. **进程状态**：关键进程运行状态
+
+#### 10.3.2 应用监控
+1. **接口响应时间**：API接口平均响应时间
+2. **接口成功率**：API接口成功调用比例
+3. **并发连接数**：当前活跃连接数
+4. **请求吞吐量**：单位时间处理请求数
+5. **错误率**：错误请求比例
+
+#### 10.3.3 业务监控
+1. **用户活跃度**：日活、月活用户数
+2. **业务成功率**：核心业务成功率
+3. **数据增长**：用户数、作业数、运动记录数
+4. **资源使用**：存储空间、API调用次数
+5. **收入指标**：订阅收入、付费用户数
+
+#### 10.3.4 监控工具
+- **Prometheus**：指标收集和存储
+- **Grafana**：数据可视化
+- **Node Exporter**：系统指标收集
+- **cAdvisor**：容器监控
+- **自定义Exporter**：业务指标收集
+
+### 10.4 告警机制
+
+#### 10.4.1 告警级别
+- **P0（紧急）**：系统不可用，需要立即处理
+- **P1（重要）**：核心功能异常，需要尽快处理
+- **P2（警告）**：非核心功能异常，需要关注
+- **P3（提示）**：系统指标异常，需要观察
+
+#### 10.4.2 告警规则
+```yaml
+# Prometheus告警规则
+groups:
+  - name: coachai_alerts
+    rules:
+      # 系统告警
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU使用率过高"
+          description: "实例 {{ $labels.instance }} CPU使用率超过80%"
+      
+      # 应用告警
+      - alert: HighAPIErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API错误率过高"
+          description: "API错误率超过5%"
+      
+      # 业务告警
+      - alert: LowUserActivity
+        expr: active_users < 10
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "用户活跃度低"
+          description: "活跃用户数低于10"
+```
+
+#### 10.4.3 告警通知渠道
+1. **即时通讯**：钉钉、企业微信、Slack
+2. **短信通知**：重要告警短信通知
+3. **邮件通知**：详细告警邮件通知
+4. **电话通知**：紧急告警电话通知
+5. **值班系统**：告警自动分配值班人员
+
+#### 10.4.4 告警处理流程
+1. **告警触发**：监控系统检测到异常
+2. **告警通知**：通过多渠道通知相关人员
+3. **问题确认**：值班人员确认问题
+4. **问题处理**：按照预案处理问题
+5. **问题复盘**：问题解决后进行复盘
+6. **规则优化**：根据复盘优化告警规则
+
+## 第 11 章 测试设计
+
+### 11.1 测试策略
+
+#### 11.1.1 测试金字塔
+```
+        E2E测试 (10%)
+           ↑
+     集成测试 (20%)
+           ↑
+     单元测试 (70%)
+```
+
+#### 11.1.2 测试类型
+1. **单元测试**：测试单个函数或类
+2. **集成测试**：测试模块间集成
+3. **接口测试**：测试API接口
+4. **性能测试**：测试系统性能
+5. **安全测试**：测试系统安全性
+6. **兼容性测试**：测试浏览器兼容性
+
+#### 11.1.3 测试环境
+- **开发环境**：开发人员本地测试
+- **测试环境**：自动化测试环境
+- **预发布环境**：生产前验证环境
+- **生产环境**：线上监控和测试
+
+### 11.2 单元测试（pytest）
+
+#### 11.2.1 测试框架
+```python
+# tests/unit/test_user_service.py
+import pytest
+import asyncio
+from unittest.mock import Mock, AsyncMock
+from code.tornado.modules.user.services import UserService
+from code.tornado.modules.user.models import User
+
+class TestUserService:
+    """用户服务单元测试"""
+    
+    @pytest.fixture
+    def mock_repository(self):
+        """模拟仓储"""
+        repo = Mock()
+        repo.get_by_email = AsyncMock(return_value=None)
+        repo.create = AsyncMock(return_value=User(id=1, email="test@example.com"))
+        return repo
+    
+    @pytest.fixture
+    def user_service(self, mock_repository):
+        """用户服务实例"""
+        return UserService(repository=mock_repository)
+    
+    @pytest.mark.asyncio
+    async def test_create_user_success(self, user_service, mock_repository):
+        """测试创建用户成功"""
+        # 准备测试数据
+        email = "test@example.com"
+        password = "Password123"
+        
+        # 执行测试
+        user = await user_service.create_user(email, password)
+        
+        # 验证结果
+        assert user is not None
+        assert user.id == 1
+        assert user.email == email
+        mock_repository.get_by_email.assert_called_once_with(email)
+        mock_repository.create.assert_called_once()
+    
+    @pytest.mark.asyncio
+    async def test_create_user_duplicate_email(self, user_service, mock_repository):
+        """测试创建用户邮箱重复"""
+        # 模拟邮箱已存在
+        mock_repository.get_by_email.return_value = User(id=2, email="test@example.com")
+        
+        # 执行测试并验证异常
+        with pytest.raises(ValueError, match="邮箱已存在"):
+            await user_service.create_user("test@example.com", "Password123")
+```
+
+#### 11.2.2 测试覆盖率
+- **目标**：单元测试覆盖率 > 80%
+- **工具**：pytest-cov
+- **命令**：`pytest --cov=code --cov-report=html`
+- **报告**：生成HTML覆盖率报告
+
+#### 11.2.3 测试最佳实践
+1. **测试命名**：test_方法名_场景_预期结果
+2. **测试隔离**：每个测试独立，不依赖其他测试
+3. **测试数据**：使用fixture管理测试数据
+4. **模拟对象**：使用mock模拟外部依赖
+5. **断言清晰**：断言信息明确，便于调试
+
+### 11.3 接口自动化测试
+
+#### 11.3.1 测试框架
+```python
+# tests/integration/test_user_api.py
+import pytest
+import aiohttp
+import asyncio
+from aiohttp import web
+
+class TestUserAPI:
+    """用户API接口测试"""
+    
+    @pytest.fixture
+    def app(self):
+        """创建测试应用"""
+        from code.main import create_app
+        return create_app(testing=True)
+    
+    @pytest.fixture
+    def client(self, aiohttp_client, app):
+        """创建测试客户端"""
+        return aiohttp_client(app)
+    
+    @pytest.mark.asyncio
+    async def test_user_register_success(self, client):
+        """测试用户注册成功"""
+        # 准备请求数据
+        data = {
+            "email": "test@example.com",
+            "password": "Password123",
+            "nickname": "测试用户"
+        }
+        
+        # 发送请求
+        resp = await client.post("/api/v1/auth/register", json=data)
+        
+        # 验证响应
+        assert resp.status == 201
+        result = await resp.json()
+        assert result["code"] == "SUCCESS"
+        assert "data" in result
+        assert "user_id" in result["data"]
+    
+    @pytest.mark.asyncio
+    async def test_user_register_invalid_email(self, client):
+        """测试用户注册邮箱格式错误"""
+        data = {
+            "email": "invalid-email",
+            "password": "Password123"
+        }
+        
+        resp = await client.post("/api/v1/auth/register", json=data)
+        
+        assert resp.status == 400
+        result = await resp.json()
+        assert result["code"] == "VALIDATION_ERROR"
+```
+
+#### 11.3.2 测试数据管理
+1. **测试数据库**：使用测试专用数据库
+2. **数据清理**：每个测试前后清理数据
+3. **数据工厂**：使用factory生成测试数据
+4. **数据断言**：验证数据库状态变化
+
+#### 11.3.3 测试场景覆盖
+1. **正常场景**：正常业务流程测试
+2. **异常场景**：错误输入、异常情况测试
+3. **边界场景**：边界条件测试
+4. **并发场景**：并发操作测试
+5. **安全场景**：安全漏洞测试
+
+### 11.4 测试覆盖率要求
+
+#### 11.4.1 覆盖率指标
+- **语句覆盖率**：> 80%
+- **分支覆盖率**：> 70%
+- **函数覆盖率**：> 85%
+- **行覆盖率**：> 80%
+
+#### 11.4.2 覆盖率工具
+- **pytest-cov**：Python测试覆盖率
+- **coverage.py**：覆盖率分析工具
+- **SonarQube**：代码质量平台
+- **Codecov**：在线覆盖率服务
+
+#### 11.4.3 覆盖率报告
+```bash
+# 运行测试并生成覆盖率报告
+pytest --cov=code --cov-report=html --cov-report=xml
+
+# 查看覆盖率报告
+open htmlcov/index.html
+
+# 上传覆盖率到Codecov
+codecov -f coverage.xml
+```
+
+### 11.5 测试工具
+
+#### 11.5.1 单元测试工具
+- **pytest**：测试框架
+- **pytest-asyncio**：异步测试支持
+- **pytest-mock**：模拟对象支持
+- **pytest-cov**：覆盖率工具
+
+#### 11.5.2 接口测试工具
+- **aiohttp**：异步HTTP客户端
+- **requests**：同步HTTP客户端
+- **Postman**：API测试工具
+- **Swagger UI**：API文档和测试
+
+#### 11.5.3 性能测试工具
+- **locust**：分布式负载测试
+- **k6**：现代负载测试工具
+- **JMeter**：传统性能测试工具
+- **wrk**：HTTP基准测试工具
+
+#### 11.5.4 安全测试工具
+- **bandit**：Python安全漏洞扫描
+- **safety**：依赖安全扫描
+- **OWASP ZAP**：Web应用安全测试
+- **sqlmap**：SQL注入测试
+
+## 第 12 章 风险评估与应对方案
+
+### 12.1 技术风险
+
+#### 12.1.1 技术选型风险
+1. **风险描述**：选择的技术栈不成熟或社区支持不足
+2. **影响程度**：高
+3. **发生概率**：中
+4. **应对措施**：
+   - 选择经过生产验证的技术
+   - 评估技术社区活跃度
+   - 准备备选技术方案
+   - 进行技术原型验证
+
+#### 12.1.2 技术实现风险
+1. **风险描述**：技术实现复杂度高，开发进度延迟
+2. **影响程度**：中
+3. **发生概率**：高
+4. **应对措施**：
+   - 采用渐进式开发策略
+   - 优先实现核心功能
+   - 定期进行代码审查
+   - 建立技术债务管理机制
+
+#### 12.1.3 技术依赖风险
+1. **风险描述**：依赖的第三方服务不稳定或停止服务
+2. **影响程度**：高
+3. **发生概率**：低
+4. **应对措施**：
+   - 选择多个供应商备选
+   - 建立服务降级机制
+   - 定期评估依赖服务状态
+   - 准备自研替代方案
+
+### 12.2 性能风险
+
+#### 12.2.1 数据库性能风险
+1. **风险描述**：数据库成为性能瓶颈，响应时间变慢
+2. **影响程度**：高
+3. **发生概率**：中
+4. **应对措施**：
+   - 数据库查询优化
+   - 建立数据库索引
+   - 实施读写分离
+   - 准备分库分表方案
+
+#### 12.2.2 应用性能风险
+1. **风险描述**：应用服务器性能不足，无法支撑高并发
+2. **影响程度**：高
+3. **发生概率**：中
+4. **应对措施**：
+   - 代码性能优化
+   - 实施缓存策略
+   - 支持水平扩展
+   - 定期性能测试
+
+#### 12.2.3 网络性能风险
+1. **风险描述**：网络延迟高，影响用户体验
+2. **影响程度**：中
+3. **发生概率**：低
+4. **应对措施**：
+   - 使用CDN加速
+   - 优化资源加载
+   - 实施连接复用
+   - 监控网络性能
+
+### 12.3 安全风险
+
+#### 12.3.1 数据安全风险
+1. **风险描述**：用户数据泄露或被篡改
+2. **影响程度**：极高
+3. **发生概率**：低
+4. **应对措施**：
+   - 数据加密存储
+   - 访问权限控制
+   - 数据备份恢复
+   - 安全
