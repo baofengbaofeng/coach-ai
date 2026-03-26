@@ -56,3 +56,25 @@ GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+## CoachAI 项目信息
+
+**项目名称**: CoachAI - 智能教育管理SaaS平台
+**项目仓库**: https://github.com/baofengbaofeng/coach-ai.git
+**许可证**: GNU General Public License v3.0
+**版权声明**: © 2026 CoachAI项目团队
+
+### 项目描述
+CoachAI是一个面向中国家庭的智能教育管理SaaS平台，通过AI技术和硬件外设集成，帮助家长管理子女的学习和运动。系统采用多租户架构，支持作业批改、运动计数、成长跟踪等核心功能。
+
+### 联系方式
+- **项目负责人**: 鲍锋
+- **仓库维护**: https://github.com/baofengbaofeng/coach-ai
+
+### 重要说明
+1. 本项目采用GPL v3开源许可证，使用本项目代码需遵守GPL v3条款
+2. 商业使用需注意GPL v3的传染性条款
+3. 贡献代码默认接受GPL v3许可证
+4. 详细的项目文档请参阅docs/目录
