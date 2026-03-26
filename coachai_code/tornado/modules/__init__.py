@@ -44,4 +44,11 @@ def get_routes() -> List[Tuple]:
     except ImportError:
         pass
     
+    # 导入成就系统模块路由
+    try:
+        from .achievements.routes import get_achievement_routes
+        routes.extend(get_achievement_routes())
+    except ImportError:
+        pass
+    
     return routes
