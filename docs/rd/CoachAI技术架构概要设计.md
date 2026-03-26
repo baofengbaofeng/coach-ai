@@ -1,4 +1,4 @@
-# CoachAI 技术架构概要设计（Tornado版）
+# CoachAI 技术架构概要设计
 
 ## 📋 文档信息
 
