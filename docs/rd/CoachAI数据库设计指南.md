@@ -11,7 +11,7 @@
 | **文档状态** | 正式版 |
 | **作者** | CoachAI-RD (后端研发专家) |
 | **审核人** | 待定 |
-| **关联文档** | [技术架构概要设计（Tornado版）.md](./CoachAI技术架构概要设计（Tornado版）.md) |
+| **关联文档** | [技术架构概要设计.md](./CoachAI技术架构概要设计.md) |
 | **目标读者** | 数据库管理员、后端开发人员 |
 
 ## 🎯 设计原则
@@ -37,7 +37,7 @@
 #### 2.1.1 租户表（tenants）
 ```sql
 -- 租户表：存储家庭租户信息，每个家庭对应一个租户
-CREATE TABLE tenants (
+CREATE TABLE coach_ai_tenants (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '租户唯一标识（UUID）',
@@ -82,7 +82,7 @@ CREATE TABLE tenants (
 #### 2.1.2 用户表（users）
 ```sql
 -- 用户表：存储系统用户信息，支持邮箱、手机号等多种登录方式
-CREATE TABLE users (
+CREATE TABLE coach_ai_users (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '用户唯一标识（UUID）',
@@ -144,7 +144,7 @@ CREATE TABLE users (
 #### 2.1.3 家庭成员表（family_members）
 ```sql
 -- 家庭成员表：关联用户和租户，定义用户在家庭中的角色和权限
-CREATE TABLE family_members (
+CREATE TABLE coach_ai_family_members (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '成员唯一标识（UUID）',
@@ -201,7 +201,7 @@ CREATE TABLE family_members (
 #### 2.2.1 作业表（homeworks）
 ```sql
 -- 作业表：存储学生作业信息，包括作业内容、状态和批改结果
-CREATE TABLE homeworks (
+CREATE TABLE coach_ai_homeworks (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '作业唯一标识（UUID）',
@@ -285,7 +285,7 @@ CREATE TABLE homeworks (
 #### 2.2.2 运动记录表（exercise_records）
 ```sql
 -- 运动记录表：存储学生运动数据，包括运动类型、计数和姿势分析
-CREATE TABLE exercise_records (
+CREATE TABLE coach_ai_exercise_records (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '记录唯一标识（UUID）',
@@ -364,7 +364,7 @@ CREATE TABLE exercise_records (
 #### 2.2.3 成就表（achievements）
 ```sql
 -- 成就表：存储用户成就信息，包括成就类型、条件和奖励
-CREATE TABLE achievements (
+CREATE TABLE coach_ai_achievements (
     -- 主键和标识
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID，自增整数',
     uuid VARCHAR(36) NOT NULL UNIQUE COMMENT '成就唯一标识（UUID）',

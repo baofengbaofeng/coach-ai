@@ -11,7 +11,7 @@
 | **文档状态** | 正式版 |
 | **作者** | CoachAI-RD (后端研发专家) |
 | **审核人** | 待定 |
-| **关联文档** | [技术架构概要设计（Tornado版）.md](./CoachAI技术架构概要设计（Tornado版）.md) |
+| **关联文档** | [技术架构概要设计.md](./CoachAI技术架构概要设计.md) |
 | **目标读者** | 运维工程师、DevOps工程师、系统管理员 |
 
 ## 🎯 部署目标
@@ -27,6 +27,8 @@
 2. **可重复**：部署过程可重复，结果一致
 3. **可回滚**：支持快速回滚到上一个版本
 4. **监控告警**：完善的监控和告警机制
+5. **代码规范**：部署脚本遵循编码规范，中文注释
+6. **开源合规**：确保部署过程符合GPL V3要求
 
 ## 🚀 开发环境部署
 
@@ -69,7 +71,7 @@ pip install -r requirements-dev.txt
 # 检查MySQL
 echo "📦 检查MySQL服务..."
 if ! command -v mysql &> /dev/null; then
-    echo "⚠️  MySQL未安装，请先安装MySQL 8.0"
+    echo "⚠️  MySQL未安装，请先安装MySQL 5.8"
     exit 1
 fi
 
@@ -108,7 +110,7 @@ version: '3.8'
 services:
   # MySQL数据库
   mysql:
-    image: mysql:8.0
+    image: mysql:5.8
     container_name: coachai-mysql-dev
     environment:
       MYSQL_ROOT_PASSWORD: root123
