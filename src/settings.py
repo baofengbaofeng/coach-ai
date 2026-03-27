@@ -85,6 +85,13 @@ class Config:
     RATE_LIMIT_ENABLED: bool = os.getenv("RATE_LIMIT_ENABLED", "True").lower() == "true"
     RATE_LIMIT_DEFAULT: str = os.getenv("RATE_LIMIT_DEFAULT", "100/hour")
     
+    # ====================== 中间件配置 ======================
+    MAX_REQUEST_BODY_SIZE: int = int(os.getenv("MAX_REQUEST_BODY_SIZE", "10485760"))  # 10MB
+    RATE_LIMIT_WINDOW_SECONDS: int = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "3600"))  # 1小时
+    RATE_LIMIT_MAX_REQUESTS: int = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "100"))
+    XSRF_COOKIES: bool = os.getenv("XSRF_COOKIES", "False").lower() == "true"
+    COOKIE_SECRET: str = os.getenv("COOKIE_SECRET", "cookie-secret-key-change-in-production")
+    
     # ====================== 事件总线配置 ======================
     EVENT_BUS_TYPE: str = os.getenv("EVENT_BUS_TYPE", "memory")  # memory, redis, rabbitmq
     EVENT_RETRY_ATTEMPTS: int = int(os.getenv("EVENT_RETRY_ATTEMPTS", "3"))
