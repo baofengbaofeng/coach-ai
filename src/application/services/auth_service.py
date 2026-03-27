@@ -21,17 +21,17 @@ class AuthService:
         self.password_utils = PasswordUtils()
     
     async def register_user(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """注册新用户"""
+        """注册新用户 - 应用服务只协调，不包含业务逻辑"""
         try:
-            # 验证用户数据
-            validation_result = self._validate_registration_data(user_data)
+            # 1. 调用领域服务验证数据（业务逻辑在领域层）
+            validation_result = self.user_service.validate_registration_data(user_data)
             if not validation_result['is_valid']:
                 return {
                     'success': False,
                     'error': '; '.join(validation_result['errors'])
                 }
             
-            # 检查用户名和邮箱是否已存在
+            # 2. 检查用户名和邮箱是否已存在（调用领域服务）
             username_exists = await self.user_service.check_username_exists(user_data['username'])
             if username_exists:
                 return {
@@ -259,8 +259,8 @@ class AuthService:
     async def reset_password(self, token: str, new_password: str) -> Dict[str, Any]:
         """重置密码"""
         try:
-            # 验证密码强度
-            validation_result = self.password_utils.validate_password_strength(new_password)
+            # 调用领域服务验证密码强度（业务逻辑在领域层）
+            validation_result = self.user_service.validate_password_for_reset(new_password)
             if not validation_result['is_valid']:
                 return {
                     'success': False,
@@ -370,44 +370,6 @@ class AuthService:
                 'success': False,
                 'error': str(e)
             }
-    
-    def _validate_registration_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """验证注册数据"""
-        result = {
-            'is_valid': True,
-            'errors': []
-        }
-        
-        # 检查必填字段
-        required_fields = ['username', 'email', 'password']
-        for field in required_fields:
-            if field not in data or not data[field]:
-                result['is_valid'] = False
-                result['errors'].append(f"{field} is required")
-        
-        # 验证邮箱格式
-        if 'email' in data and data['email']:
-            if '@' not in data['email']:
-                result['is_valid'] = False
-                result['errors'].append("Invalid email format")
-        
-        # 验证密码强度
-        if 'password' in data and data['password']:
-            validation = self.password_utils.validate_password_strength(data['password'])
-            if not validation['is_valid']:
-                result['is_valid'] = False
-                result['errors'].extend(validation['errors'])
-        
-        # 验证用户名格式
-        if 'username' in data and data['username']:
-            if len(data['username']) < 3:
-                result['is_valid'] = False
-                result['errors'].append("Username must be at least 3 characters")
-            if not data['username'].replace('_', '').isalnum():
-                result['is_valid'] = False
-                result['errors'].append("Username can only contain letters, numbers and underscores")
-        
-        return result
     
     async def _send_verification_email(self, email: str, token: str):
         """发送验证邮件（异步）"""

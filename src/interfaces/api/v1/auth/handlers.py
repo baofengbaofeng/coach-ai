@@ -58,23 +58,10 @@ class RegisterHandler(BaseHandler):
         POST /api/auth/register
         """
         try:
-            # 验证请求数据
+            # 接口层只处理协议转换，不验证业务逻辑
             data = self.get_json_body()
-            required_fields = ['username', 'email', 'password']
             
-            for field in required_fields:
-                if field not in data or not data[field]:
-                    raise ValidationError(f"Field '{field}' is required")
-            
-            # 验证邮箱格式
-            if '@' not in data['email']:
-                raise ValidationError("Invalid email format")
-            
-            # 验证密码强度
-            if len(data['password']) < 8:
-                raise ValidationError("Password must be at least 8 characters")
-            
-            # 调用应用服务注册用户
+            # 调用应用服务注册用户（所有业务验证在领域层）
             auth_service = AuthService()
             result = await auth_service.register_user(data)
             
@@ -256,11 +243,7 @@ class ResetPasswordHandler(BaseHandler):
                 if field not in data or not data[field]:
                     raise ValidationError(f"Field '{field}' is required")
             
-            # 验证密码强度
-            if len(data['new_password']) < 8:
-                raise ValidationError("Password must be at least 8 characters")
-            
-            # 调用应用服务重置密码
+            # 调用应用服务重置密码（密码强度验证在领域层）
             auth_service = AuthService()
             result = await auth_service.reset_password(
                 token=data['token'],

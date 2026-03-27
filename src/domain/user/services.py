@@ -273,6 +273,149 @@ class UserService:
         
         except Exception:
             return False
+    
+    def validate_registration_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        验证注册数据 - 所有业务规则集中在这里
+        
+        Args:
+            data: 注册数据
+            
+        Returns:
+            验证结果
+        """
+        result = {
+            'is_valid': True,
+            'errors': []
+        }
+        
+        # 检查必填字段
+        required_fields = ['username', 'email', 'password']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                result['is_valid'] = False
+                result['errors'].append(f"{field} is required")
+        
+        # 验证邮箱格式 - 使用领域服务的方法
+        if 'email' in data and data['email']:
+            if not self.validate_email(data['email']):
+                result['is_valid'] = False
+                result['errors'].append("Invalid email format")
+        
+        # 验证用户名格式 - 使用领域服务的方法
+        if 'username' in data and data['username']:
+            if not self.validate_username(data['username']):
+                result['is_valid'] = False
+                result['errors'].append("Invalid username format")
+        
+        # 验证密码强度 - 使用领域服务的方法
+        if 'password' in data and data['password']:
+            password_validation = self.validate_password(data['password'])
+            if not password_validation['valid']:  # 注意：这里是'valid'不是'is_valid'
+                result['is_valid'] = False
+                result['errors'].extend(password_validation['issues'])
+        
+        return result
+    
+    def check_username_exists(self, username: str) -> bool:
+        """
+        检查用户名是否存在
+        
+        Args:
+            username: 用户名
+            
+        Returns:
+            是否存在
+        """
+        # 这里应该调用仓储层查询数据库
+        # 暂时返回False，实际实现需要仓储层
+        return False
+    
+    def check_email_exists(self, email: str) -> bool:
+        """
+        检查邮箱是否存在
+        
+        Args:
+            email: 邮箱地址
+            
+        Returns:
+            是否存在
+        """
+        # 这里应该调用仓储层查询数据库
+        # 暂时返回False，实际实现需要仓储层
+        return False
+    
+    def find_user_by_identifier(self, identifier: str) -> Optional[User]:
+        """
+        通过标识符查找用户（用户名或邮箱）
+        
+        Args:
+            identifier: 用户名或邮箱
+            
+        Returns:
+            用户实体或None
+        """
+        # 这里应该调用仓储层查询数据库
+        # 暂时返回None，实际实现需要仓储层
+        return None
+    
+    def find_user_by_email(self, email: str) -> Optional[User]:
+        """
+        通过邮箱查找用户
+        
+        Args:
+            email: 邮箱地址
+            
+        Returns:
+            用户实体或None
+        """
+        # 这里应该调用仓储层查询数据库
+        # 暂时返回None，实际实现需要仓储层
+        return None
+    
+    def create_user(self, username: str, email: str, password_hash: str, 
+                   display_name: Optional[str] = None, phone: Optional[str] = None) -> User:
+        """
+        创建用户实体
+        
+        Args:
+            username: 用户名
+            email: 邮箱
+            password_hash: 密码哈希
+            display_name: 显示名称
+            phone: 手机号
+            
+        Returns:
+            用户实体
+        """
+        # 创建值对象
+        email_obj = Email(email)
+        password_obj = Password(password_hash)  # Password类只接受哈希值
+        phone_obj = PhoneNumber(phone) if phone else None
+        
+        # 创建用户实体
+        user = User(
+            username=username,
+            email=email_obj,
+            password=password_obj,
+            phone=phone_obj,
+            display_name=display_name or username
+        )
+        
+        return user
+    
+    def validate_password_for_reset(self, password: str) -> Dict[str, Any]:
+        """
+        验证重置密码的强度
+        
+        Args:
+            password: 密码
+            
+        Returns:
+            验证结果
+        """
+        # 调用现有的密码验证方法
+        return self.validate_password(password)
 
 
 class TenantService:
