@@ -9,8 +9,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from coachai_code.database.migrations import migration_manager
-from coachai_code.database.connection import get_engine
+from coding.database.migrations import migration_manager
+from coding.database.connection import get_engine
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
 def create_sample_data(engine):
     """创建示例数据"""
     from sqlalchemy.orm import sessionmaker
-    from coachai_code.database.models import (
+    from coding.database.models import (
         Achievement, AchievementType, AchievementDifficulty,
         Badge, BadgeType, BadgeRarity,
         Reward, RewardType

@@ -8,7 +8,7 @@ import pytest
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from coachai_code.database.models import (
+from coding.database.models import (
     Achievement, AchievementType, AchievementDifficulty, AchievementStatus,
     UserAchievement, UserAchievementStatus,
     Badge, BadgeRarity, BadgeType, BadgeStatus,

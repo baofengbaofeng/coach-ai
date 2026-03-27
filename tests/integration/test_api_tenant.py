@@ -7,8 +7,8 @@ import json
 import pytest
 from tornado.testing import AsyncHTTPTestCase
 
-from coachai_code.tornado.core.application import create_application
-from coachai_code.config import config
+from coding.tornado.core.application import create_application
+from coding.config import config
 
 
 class TestTenantAPI(AsyncHTTPTestCase):

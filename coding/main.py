@@ -11,8 +11,8 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from coachai_code.config import config
-from coachai_code.tornado.core.application import create_application
+from coding.config import config
+from coding.tornado.core.application import create_application
 
 
 def setup_logging():

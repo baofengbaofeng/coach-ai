@@ -10,6 +10,12 @@ from .handlers import (
     AchievementTriggerHandler, BadgeGrantHandler,
     RewardClaimHandler, UserBadgeListHandler
 )
+from .analytics_handlers import (
+    UserAchievementAnalyticsHandler, SystemAchievementAnalyticsHandler,
+    AchievementPerformanceMetricsHandler, AchievementRecommendationsHandler,
+    AchievementTrendAnalysisHandler, PopularAchievementsHandler,
+    DifficultAchievementsHandler, AchievementComparisonHandler
+)
 
 
 def get_achievement_routes():
@@ -48,4 +54,16 @@ def get_achievement_routes():
         
         # 奖励领取
         (r"/api/v1/reward-claim", RewardClaimHandler),
+        
+        # 成就数据分析
+        (r"/api/v1/achievement-analytics/user", UserAchievementAnalyticsHandler),
+        (r"/api/v1/achievement-analytics/user/([^/]+)", UserAchievementAnalyticsHandler),
+        (r"/api/v1/achievement-analytics/system", SystemAchievementAnalyticsHandler),
+        (r"/api/v1/achievement-analytics/performance", AchievementPerformanceMetricsHandler),
+        (r"/api/v1/achievement-analytics/recommendations", AchievementRecommendationsHandler),
+        (r"/api/v1/achievement-analytics/recommendations/([^/]+)", AchievementRecommendationsHandler),
+        (r"/api/v1/achievement-analytics/trend", AchievementTrendAnalysisHandler),
+        (r"/api/v1/achievement-analytics/popular", PopularAchievementsHandler),
+        (r"/api/v1/achievement-analytics/difficult", DifficultAchievementsHandler),
+        (r"/api/v1/achievement-analytics/compare", AchievementComparisonHandler),
     ]

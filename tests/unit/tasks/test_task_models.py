@@ -7,8 +7,8 @@ import pytest
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
-from coachai_code.database.models import Task, TaskAssignment, TaskSubmission, TaskEvaluation, User, Tenant
-from coachai_code.database.session import get_db_session
+from coding.database.models import Task, TaskAssignment, TaskSubmission, TaskEvaluation, User, Tenant
+from coding.database.session import get_db_session
 
 
 class TestTaskModel:

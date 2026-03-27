@@ -8,8 +8,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine, text
-from coachai_code.config import config
-from coachai_code.database.models import Base, Task, TaskAssignment, TaskSubmission, TaskEvaluation
+from coding.config import config
+from coding.database.models import Base, Task, TaskAssignment, TaskSubmission, TaskEvaluation
 
 
 def create_task_tables():

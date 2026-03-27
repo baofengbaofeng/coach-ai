@@ -10,7 +10,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, func, desc
 
-from coachai_code.database.models import (
+from coding.database.models import (
     Achievement, AchievementType, AchievementDifficulty, AchievementStatus,
     UserAchievement, UserAchievementStatus,
     Badge, BadgeRarity, BadgeType, BadgeStatus,
@@ -24,6 +24,7 @@ from .models import (
     BadgeGrantNotification, RewardClaimNotification,
     AchievementStats, UserAchievementSummary, TriggerEventType
 )
+from .notifications import notification_service, social_share_service
 
 logger = logging.getLogger(__name__)
 
@@ -232,6 +233,13 @@ class UserAchievementService:
                 # 触发奖励
                 self._trigger_achievement_rewards(progress_update.user_id, achievement)
                 
+                # 发送成就解锁通知
+                self._send_achievement_unlock_notification(
+                    progress_update.user_id, 
+                    achievement, 
+                    user_achievement
+                )
+                
                 # 记录日志
                 logger.info(f"User {progress_update.user_id} unlocked achievement {achievement.id}: {achievement.name}")
             
@@ -255,11 +263,15 @@ class UserAchievementService:
             # 发放徽章奖励
             if achievement.reward_badge_id:
                 badge_service = BadgeService(self.db)
-                badge_service.grant_badge_to_user(
+                user_badge = badge_service.grant_badge_to_user(
                     user_id=user_id,
                     badge_id=achievement.reward_badge_id,
                     grant_reason=f"Achievement unlocked: {achievement.name}"
                 )
+                
+                # 发送徽章授予通知
+                if user_badge:
+                    self._send_badge_grant_notification(user_id, user_badge.badge, user_badge)
             
             # 发放物品奖励
             if achievement.reward_items:
@@ -268,6 +280,57 @@ class UserAchievementService:
                 
         except Exception as e:
             logger.error(f"Failed to trigger achievement rewards: {str(e)}")
+    
+    def _send_achievement_unlock_notification(self, user_id: int, achievement: Achievement, user_achievement: UserAchievement):
+        """发送成就解锁通知"""
+        try:
+            notification = AchievementUnlockNotification(
+                user_id=user_id,
+                achievement=achievement,
+                user_achievement=user_achievement
+            )
+            
+            # 发送通知
+            notification_service.send_achievement_unlock_notification(notification)
+            
+            # 可选：自动分享到社交平台
+            # social_share_service.share_achievement(notification.to_dict())
+            
+        except Exception as e:
+            logger.error(f"Failed to send achievement unlock notification: {str(e)}")
+    
+    def _send_badge_grant_notification(self, user_id: int, badge: Badge, user_badge: UserBadge):
+        """发送徽章授予通知"""
+        try:
+            notification = BadgeGrantNotification(
+                user_id=user_id,
+                badge=badge,
+                user_badge=user_badge
+            )
+            
+            # 发送通知
+            notification_service.send_badge_grant_notification(notification)
+            
+            # 可选：自动分享到社交平台
+            # social_share_service.share_badge(notification.to_dict())
+            
+        except Exception as e:
+            logger.error(f"Failed to send badge grant notification: {str(e)}")
+    
+    def _send_reward_claim_notification(self, user_id: int, reward: Reward, user_reward: UserReward):
+        """发送奖励领取通知"""
+        try:
+            notification = RewardClaimNotification(
+                user_id=user_id,
+                reward=reward,
+                user_reward=user_reward
+            )
+            
+            # 发送通知
+            notification_service.send_reward_claim_notification(notification)
+            
+        except Exception as e:
+            logger.error(f"Failed to send reward claim notification: {str(e)}")
     
     def get_user_achievement_stats(self, user_id: int) -> AchievementStats:
         """获取用户成就统计"""
@@ -355,6 +418,9 @@ class BadgeService:
             self.db.commit()
             self.db.refresh(user_badge)
             
+            # 发送徽章授予通知
+            self._send_badge_grant_notification(user_id, badge, user_badge)
+            
             logger.info(f"Granted badge {badge_id} to user {user_id}")
             return user_badge
         except Exception as e:
@@ -417,6 +483,9 @@ class RewardService:
             
             self.db.commit()
             self.db.refresh(user_reward)
+            
+            # 发送奖励领取通知
+            self._send_reward_claim_notification(user_id, reward, user_reward)
             
             logger.info(f"User {user_id} claimed reward {reward_id}")
             return user_reward

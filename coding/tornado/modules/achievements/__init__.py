@@ -16,6 +16,16 @@ from .handlers import (
     RewardClaimHandler,
     UserBadgeListHandler
 )
+from .analytics_handlers import (
+    UserAchievementAnalyticsHandler,
+    SystemAchievementAnalyticsHandler,
+    AchievementPerformanceMetricsHandler,
+    AchievementRecommendationsHandler,
+    AchievementTrendAnalysisHandler,
+    PopularAchievementsHandler,
+    DifficultAchievementsHandler,
+    AchievementComparisonHandler
+)
 
 __all__ = [
     'AchievementListHandler',
@@ -27,5 +37,13 @@ __all__ = [
     'AchievementTriggerHandler',
     'BadgeGrantHandler',
     'RewardClaimHandler',
-    'UserBadgeListHandler'
+    'UserBadgeListHandler',
+    'UserAchievementAnalyticsHandler',
+    'SystemAchievementAnalyticsHandler',
+    'AchievementPerformanceMetricsHandler',
+    'AchievementRecommendationsHandler',
+    'AchievementTrendAnalysisHandler',
+    'PopularAchievementsHandler',
+    'DifficultAchievementsHandler',
+    'AchievementComparisonHandler'
 ]

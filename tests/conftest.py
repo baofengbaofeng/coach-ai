@@ -350,8 +350,8 @@ def create_test_user(session, user_data=None):
     返回:
         User: 创建的测试用户
     """
-    from coachai_code.tornado.modules.auth.models import User
-    from coachai_code.tornado.utils.password_utils import hash_password
+    from coding.tornado.modules.auth.models import User
+    from coding.tornado.utils.password_utils import hash_password
     
     if user_data is None:
         user_data = {
@@ -382,7 +382,7 @@ def create_test_tenant(session, tenant_data=None, created_by=None):
     返回:
         Tenant: 创建的测试租户
     """
-    from coachai_code.tornado.modules.tenant.models import Tenant
+    from coding.tornado.modules.tenant.models import Tenant
     
     if tenant_data is None:
         tenant_data = {

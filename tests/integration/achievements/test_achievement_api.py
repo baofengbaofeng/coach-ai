@@ -9,8 +9,8 @@ import json
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
-from coachai_code.tornado.core.application import make_app
-from coachai_code.database.models import (
+from coding.tornado.core.application import make_app
+from coding.database.models import (
     User, Achievement, UserAchievement, Badge, Reward
 )
 
@@ -49,10 +49,10 @@ class TestAchievementAPI:
     
     def test_get_achievements(self, test_client, auth_headers, mock_current_user):
         """测试获取成就列表"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
@@ -103,10 +103,10 @@ class TestAchievementAPI:
     
     def test_create_achievement(self, test_client, auth_headers, mock_current_user):
         """测试创建成就"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
@@ -126,7 +126,7 @@ class TestAchievementAPI:
                 mock_db.refresh.return_value = None
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.AchievementService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.AchievementService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     mock_service.create_achievement.return_value = achievement
@@ -154,10 +154,10 @@ class TestAchievementAPI:
     
     def test_get_user_achievements(self, test_client, auth_headers, mock_current_user):
         """测试获取用户成就列表"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
@@ -240,15 +240,15 @@ class TestAchievementAPI:
     
     def test_update_achievement_progress(self, test_client, auth_headers, mock_current_user):
         """测试更新成就进度"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.UserAchievementService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.UserAchievementService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     
@@ -305,20 +305,20 @@ class TestAchievementAPI:
     
     def test_get_user_achievement_stats(self, test_client, auth_headers, mock_current_user):
         """测试获取用户成就统计"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.UserAchievementService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.UserAchievementService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     
                     # 模拟统计
-                    from coachai_code.tornado.modules.achievements.models import AchievementStats
+                    from coding.tornado.modules.achievements.models import AchievementStats
                     stats = AchievementStats(
                         total_achievements=10,
                         unlocked_achievements=3,
@@ -348,20 +348,20 @@ class TestAchievementAPI:
     
     def test_trigger_achievement_event(self, test_client, auth_headers, mock_current_user):
         """测试触发成就事件"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.AchievementTriggerService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.AchievementTriggerService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     
                     # 模拟通知
-                    from coachai_code.tornado.modules.achievements.models import AchievementUnlockNotification
+                    from coding.tornado.modules.achievements.models import AchievementUnlockNotification
                     
                     achievement = MagicMock(spec=Achievement)
                     achievement.id = "achievement_1"
@@ -410,15 +410,15 @@ class TestAchievementAPI:
     
     def test_grant_badge(self, test_client, auth_headers, mock_current_user):
         """测试授予徽章"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.BadgeService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.BadgeService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     
@@ -468,15 +468,15 @@ class TestAchievementAPI:
     
     def test_claim_reward(self, test_client, auth_headers, mock_current_user):
         """测试领取奖励"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 
                 # 模拟服务
-                with patch('coachai_code.tornado.modules.achievements.handlers.RewardService') as mock_service_class:
+                with patch('coding.tornado.modules.achievements.handlers.RewardService') as mock_service_class:
                     mock_service = MagicMock()
                     mock_service_class.return_value = mock_service
                     
@@ -528,10 +528,10 @@ class TestAchievementAPI:
     
     def test_get_user_badges(self, test_client, auth_headers, mock_current_user):
         """测试获取用户徽章列表"""
-        with patch('coachai_code.tornado.core.middleware.get_current_user') as mock_get_user:
+        with patch('coding.tornado.core.middleware.get_current_user') as mock_get_user:
             mock_get_user.return_value = mock_current_user
             
-            with patch('coachai_code.tornado.modules.achievements.handlers.get_db_session') as mock_session:
+            with patch('coding.tornado.modules.achievements.handlers.get_db_session') as mock_session:
                 mock_db = MagicMock()
                 mock_session.return_value.__enter__.return_value = mock_db
                 

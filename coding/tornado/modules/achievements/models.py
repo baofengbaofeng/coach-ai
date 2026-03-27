@@ -9,7 +9,7 @@ from datetime import datetime
 from enum import Enum
 import json
 
-from coachai_code.database.models import (
+from coding.database.models import (
     Achievement, AchievementType, AchievementDifficulty, AchievementStatus,
     UserAchievement, UserAchievementStatus,
     Badge, BadgeRarity, BadgeType, BadgeStatus,

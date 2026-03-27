@@ -11,8 +11,8 @@ import json
 from tornado.web import RequestHandler
 from tornado.escape import json_decode
 
-from coachai_code.tornado.core.base_handler import BaseHandler
-from coachai_code.tornado.core.exceptions import (
+from coding.tornado.core.base_handler import BaseHandler
+from coding.tornado.core.exceptions import (
     ValidationError, NotFoundError, UnauthorizedError, ForbiddenError
 )
 from .services import (

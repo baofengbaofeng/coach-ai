@@ -379,7 +379,7 @@ class TestWebRTCAPI:
 @pytest.fixture
 def create_exercise_type(db_session):
     """创建测试运动类型夹具"""
-    from coachai_code.database.models import ExerciseType
+    from coding.database.models import ExerciseType
     
     exercise_type = ExerciseType(
         name_zh='俯卧撑',
@@ -401,7 +401,7 @@ def create_exercise_type(db_session):
 @pytest.fixture
 def create_exercise_record(db_session, test_user, create_exercise_type):
     """创建测试运动记录夹具"""
-    from coachai_code.database.models import ExerciseRecord
+    from coding.database.models import ExerciseRecord
     
     exercise_record = ExerciseRecord(
         user_id=test_user.id,
@@ -422,7 +422,7 @@ def create_exercise_record(db_session, test_user, create_exercise_type):
 @pytest.fixture
 def create_camera_device(db_session):
     """创建测试摄像头设备夹具"""
-    from coachai_code.database.models import CameraDevice
+    from coding.database.models import CameraDevice
     
     camera_device = CameraDevice(
         device_name='测试摄像头',

@@ -9,9 +9,9 @@ from datetime import datetime, timedelta
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from coachai_code.main import create_app
-from coachai_code.database.models import User, Tenant
-from coachai_code.database.session import get_db_session
+from coding.main import create_app
+from coding.database.models import User, Tenant
+from coding.database.session import get_db_session
 from tests.integration.conftest import create_test_user, get_auth_headers
 
 
@@ -304,7 +304,7 @@ class TestTaskAssignmentAPI(AsyncHTTPTestCase):
         self.db.commit()
         
         # 创建测试任务
-        from coachai_code.database.models import Task
+        from coding.database.models import Task
         self.task = Task(
             title="分配测试任务",
             description="用于测试分配的任务",
@@ -356,7 +356,7 @@ class TestTaskAssignmentAPI(AsyncHTTPTestCase):
     def test_get_assignment(self):
         """测试获取任务分配"""
         # 首先创建分配
-        from coachai_code.database.models import TaskAssignment
+        from coding.database.models import TaskAssignment
         assignment = TaskAssignment(
             task_id=self.task.id,
             student_id=self.student.id,
@@ -387,7 +387,7 @@ class TestTaskAssignmentAPI(AsyncHTTPTestCase):
     def test_update_assignment(self):
         """测试更新任务分配"""
         # 首先创建分配
-        from coachai_code.database.models import TaskAssignment
+        from coding.database.models import TaskAssignment
         assignment = TaskAssignment(
             task_id=self.task.id,
             student_id=self.student.id,
@@ -424,7 +424,7 @@ class TestTaskAssignmentAPI(AsyncHTTPTestCase):
     def test_get_student_assignments(self):
         """测试获取学员的任务分配"""
         # 创建几个分配
-        from coachai_code.database.models import TaskAssignment
+        from coding.database.models import TaskAssignment
         for i in range(3):
             assignment = TaskAssignment(
                 task_id=self.task.id,
@@ -485,7 +485,7 @@ class TestTaskSubmissionAPI(AsyncHTTPTestCase):
         self.db.commit()
         
         # 创建测试任务
-        from coachai_code.database.models import Task
+        from coding.database.models import Task
         self.task = Task(
             title="提交测试任务",
             description="用于测试提交的任务",
@@ -499,7 +499,7 @@ class TestTaskSubmissionAPI(AsyncHTTPTestCase):
         self.db.refresh(self.task)
         
         # 创建测试分配
-        from coachai_code.database.models import TaskAssignment
+        from coding.database.models import TaskAssignment
         self.assignment = TaskAssignment(
             task_id=self.task.id,
             student_id=self.student.id,
@@ -555,7 +555,7 @@ class TestTaskSubmissionAPI(AsyncHTTPTestCase):
     def test_review_submission(self):
         """测试审核任务提交"""
         # 首先创建提交
-        from coachai_code.database.models import TaskSubmission
+        from coding.database.models import TaskSubmission
         submission = TaskSubmission(
             assignment_id=self.assignment.id,
             submitter_id=self.student.id,
@@ -622,7 +622,7 @@ class TestTaskEvaluationAPI(AsyncHTTPTestCase):
         self.db.commit()
         
         # 创建测试任务
-        from coachai_code.database.models import Task
+        from coding.database.models import Task
         self.task = Task(
             title="评价测试任务",
             description="用于测试评价的任务",
@@ -636,7 +636,7 @@ class TestTaskEvaluationAPI(AsyncHTTPTestCase):
         self.db.refresh(self.task)
         
         # 创建测试分配
-        from coachai_code.database.models import TaskAssignment
+        from coding.database.models import TaskAssignment
         self.assignment = TaskAssignment(
             task_id=self.task.id,
             student_id=self.student.id,
@@ -700,7 +700,7 @@ class TestTaskEvaluationAPI(AsyncHTTPTestCase):
     def test_publish_evaluation(self):
         """测试发布任务评价"""
         # 首先创建评价
-        from coachai_code.database.models import TaskEvaluation
+        from coding.database.models import TaskEvaluation
         evaluation = TaskEvaluation(
             assignment_id=self.assignment.id,
             evaluator_id=self.user.id,
@@ -760,7 +760,7 @@ class TestTaskSchedulerAPI(AsyncHTTPTestCase):
         self.db.commit()
         
         # 创建几个测试任务
-        from coachai_code.database.models import Task
+        from coding.database.models import Task
         from datetime import datetime, timedelta
         
         for i in range(5):
@@ -845,7 +845,7 @@ class TestTaskAnalyticsAPI(AsyncHTTPTestCase):
         self.db.commit()
         
         # 创建测试数据
-        from coachai_code.database.models import Task, TaskAssignment, TaskEvaluation
+        from coding.database.models import Task, TaskAssignment, TaskEvaluation
         from datetime import datetime, timedelta
         
         # 创建一些任务

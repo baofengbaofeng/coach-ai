@@ -6,7 +6,7 @@ import pytest
 from datetime import datetime, date, timedelta
 import json
 
-from coachai_code.database.models import (
+from coding.database.models import (
     ExerciseType, ExerciseRecord, ExercisePlan, CameraDevice,
     User, Tenant
 )
