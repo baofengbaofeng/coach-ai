@@ -105,7 +105,7 @@ install_dependencies() {
     log_info "安装Python依赖..."
     
     local project_root=$(get_project_root)
-    local requirements_file="$project_root/requirements.txt"
+    local requirements_file="$project_root/src/requirements.txt"
     
     if [[ ! -f "$requirements_file" ]]; then
         log_error "依赖文件不存在: $requirements_file"
