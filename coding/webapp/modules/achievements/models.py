@@ -9,7 +9,7 @@ from datetime import datetime
 from enum import Enum
 import json
 
-from coding.database.models import (
+from database.models import (
     Achievement, AchievementType, AchievementDifficulty, AchievementStatus,
     UserAchievement, UserAchievementStatus,
     Badge, BadgeRarity, BadgeType, BadgeStatus,

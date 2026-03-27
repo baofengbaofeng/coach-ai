@@ -9,7 +9,7 @@ from typing import Dict, Optional, Any
 import jwt
 from loguru import logger
 
-from coding.config import config
+from config import config
 
 
 # 创建工具类实例

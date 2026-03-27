@@ -92,7 +92,7 @@ def check_api_routes():
     print("检查成就系统API路由...")
     
     try:
-        from coding.tornado.modules.achievements.routes import get_achievement_routes
+        from webapp.modules.achievements.routes import get_achievement_routes
         
         routes = get_achievement_routes()
         route_count = len(routes)

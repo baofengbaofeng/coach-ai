@@ -156,6 +156,7 @@ except ImportError as e:
 """
     
     import subprocess
+    project_root = os.path.dirname(os.path.abspath(__file__))
     result = subprocess.run([sys.executable, "-c", test_code], 
                           cwd=project_root, capture_output=True, text=True)
     

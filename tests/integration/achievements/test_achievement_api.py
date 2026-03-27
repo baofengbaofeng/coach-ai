@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
-from coding.tornado.core.application import make_app
+from webapp.core.application import make_app
 from coding.database.models import (
     User, Achievement, UserAchievement, Badge, Reward
 )
@@ -318,7 +318,7 @@ class TestAchievementAPI:
                     mock_service_class.return_value = mock_service
                     
                     # 模拟统计
-                    from coding.tornado.modules.achievements.models import AchievementStats
+                    from webapp.modules.achievements.models import AchievementStats
                     stats = AchievementStats(
                         total_achievements=10,
                         unlocked_achievements=3,
@@ -361,7 +361,7 @@ class TestAchievementAPI:
                     mock_service_class.return_value = mock_service
                     
                     # 模拟通知
-                    from coding.tornado.modules.achievements.models import AchievementUnlockNotification
+                    from webapp.modules.achievements.models import AchievementUnlockNotification
                     
                     achievement = MagicMock(spec=Achievement)
                     achievement.id = "achievement_1"

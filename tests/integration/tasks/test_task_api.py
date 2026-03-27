@@ -6,8 +6,8 @@
 import pytest
 import json
 from datetime import datetime, timedelta
-from tornado.testing import AsyncHTTPTestCase
-from tornado.web import Application
+from webapp.testing import AsyncHTTPTestCase
+from webapp.web import Application
 
 from coding.main import create_app
 from coding.database.models import User, Tenant

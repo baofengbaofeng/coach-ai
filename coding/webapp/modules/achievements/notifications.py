@@ -12,7 +12,7 @@ import json
 from .models import (
     AchievementUnlockNotification, BadgeGrantNotification, RewardClaimNotification
 )
-from coding.database.models import (
+from database.models import (
     User, Achievement, UserAchievement, Badge, UserBadge, Reward, UserReward
 )
 

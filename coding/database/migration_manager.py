@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 from loguru import logger
 
-from coding.config import config
+from config import config
 
 
 class MigrationManager:

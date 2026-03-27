@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from coding.tornado.core.base_handler import BaseHandler
 from coding.tornado.core.auth_middleware import auth_required
-from coding.database.session import get_db_session
+from database.session import get_db_session
 
 from .models import (
     TaskCreateRequest, TaskUpdateRequest, TaskAssignmentRequest,

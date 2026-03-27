@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc, and_, or_, extract, case
 import json
 
-from coding.database.models import (
+from database.models import (
     Achievement, AchievementType, AchievementDifficulty, AchievementStatus,
     UserAchievement, UserAchievementStatus,
     Badge, BadgeRarity, BadgeType, BadgeStatus,

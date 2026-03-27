@@ -9,7 +9,7 @@ import json
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
-from coding.tornado.core.application import make_app
+from webapp.core.application import make_app
 from coding.database.models import User
 
 

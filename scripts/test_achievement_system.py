@@ -132,18 +132,18 @@ def check_imports():
         )
         print("✅ 数据库模型导入成功")
         
-        from coding.tornado.modules.achievements import (
+        from webapp.modules.achievements import (
             AchievementListHandler, UserAchievementAnalyticsHandler
         )
         print("✅ 处理器导入成功")
         
-        from coding.tornado.modules.achievements.services import AchievementService
+        from webapp.modules.achievements.services import AchievementService
         print("✅ 服务导入成功")
         
-        from coding.tornado.modules.achievements.analytics import AchievementAnalyticsService
+        from webapp.modules.achievements.analytics import AchievementAnalyticsService
         print("✅ 分析服务导入成功")
         
-        from coding.tornado.modules.achievements.notifications import notification_service
+        from webapp.modules.achievements.notifications import notification_service
         print("✅ 通知服务导入成功")
         
         return True
@@ -163,7 +163,7 @@ def check_api_routes():
     print("="*60)
     
     try:
-        from coding.tornado.modules.achievements.routes import get_achievement_routes
+        from webapp.modules.achievements.routes import get_achievement_routes
         
         routes = get_achievement_routes()
         

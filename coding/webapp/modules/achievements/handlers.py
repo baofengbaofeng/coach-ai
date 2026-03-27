@@ -14,7 +14,7 @@ from tornado.escape import json_decode
 from coding.tornado.core.base_handler import BaseHandler
 from coding.tornado.core.error_handler import APIError
 from coding.tornado.core.middleware import auth_required
-from coding.database.connection import get_db_session
+from database.connection import get_db_session
 
 from .services import (
     AchievementService, UserAchievementService, BadgeService,
@@ -503,7 +503,7 @@ class UserBadgeListHandler(BaseHandler):
             with get_db_session() as session:
                 # 查询用户徽章
                 from sqlalchemy.orm import joinedload
-                from coding.database.models import UserBadge, Badge
+                from database.models import UserBadge, Badge
                 
                 query = session.query(UserBadge).filter(
                     UserBadge.user_id == user_id,

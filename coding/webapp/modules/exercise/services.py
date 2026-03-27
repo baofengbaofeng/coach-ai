@@ -10,8 +10,8 @@ import json
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, func, desc, asc
 
-from coding.database.connection import get_db_session
-from coding.database.models import (
+from database.connection import get_db_session
+from database.models import (
     ExerciseType, ExerciseRecord, ExercisePlan, CameraDevice,
     User, Tenant
 )

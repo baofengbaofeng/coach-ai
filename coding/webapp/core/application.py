@@ -7,7 +7,7 @@ from typing import List, Tuple
 from tornado.web import Application, url
 from loguru import logger
 
-from coding.config import get_config
+from config import get_config
 from .base_handler import BaseHandler
 
 
@@ -66,7 +66,7 @@ class HealthCheckHandler(BaseHandler):
     
     async def get(self):
         """健康检查端点"""
-        from coding.config import get_config
+        from config import get_config
         config = get_config()
         
         self.success({
@@ -85,7 +85,7 @@ class DatabaseHealthHandler(BaseHandler):
         """数据库健康检查端点"""
         try:
             # 尝试导入数据库连接
-            from coding.database.connection import get_db_session
+            from database.connection import get_db_session
             with get_db_session() as session:
                 # 执行简单查询
                 session.execute("SELECT 1")
@@ -110,7 +110,7 @@ class RedisHealthHandler(BaseHandler):
         """Redis健康检查端点"""
         try:
             # 尝试导入Redis客户端
-            from coding.database.redis_client import redis_client
+            from database.redis_client import redis_client
             
             # 测试Redis连接
             redis_client.ping()

@@ -15,7 +15,7 @@ sys.path.insert(0, str(project_root))
 from database.migrations import create_tables, check_tables
 from database.connection import get_db_session, engine
 from database.models import Base, User, Tenant, TenantMember, Permission, Role, RolePermission, UserRole
-from tornado.utils.password_utils import hash_password
+from webapp.utils.password_utils import hash_password
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

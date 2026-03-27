@@ -8,7 +8,7 @@ from typing import Optional
 from loguru import logger
 import redis
 
-from coding.config import config
+from config import config
 
 
 class RedisClientManager:

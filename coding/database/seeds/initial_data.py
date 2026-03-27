@@ -11,11 +11,11 @@ from loguru import logger
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from database.connection import get_db_session
-from coding.tornado.modules.auth.models import (
+from webapp.modules.auth.models import (
     User, Permission, Role, UserRole, RolePermission
 )
-from coding.tornado.modules.tenant.models import Tenant, TenantMember
-from tornado.utils.password_utils import hash_password
+from webapp.modules.tenant.models import Tenant, TenantMember
+from webapp.utils.password_utils import hash_password
 
 
 def create_system_permissions() -> list[Permission]:

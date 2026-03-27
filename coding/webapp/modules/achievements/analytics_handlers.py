@@ -14,7 +14,7 @@ from tornado.escape import json_decode
 from coding.tornado.core.base_handler import BaseHandler
 from coding.tornado.core.error_handler import APIError
 from coding.tornado.core.middleware import auth_required
-from coding.database.connection import get_db_session
+from database.connection import get_db_session
 
 from .analytics import AchievementAnalyticsService
 
@@ -242,7 +242,7 @@ class PopularAchievementsHandler(BaseHandler):
                 
                 # 这里简化实现，实际应该使用更复杂的查询
                 from sqlalchemy import func
-                from coding.database.models import Achievement, UserAchievement
+                from database.models import Achievement, UserAchievement
                 
                 popular_achievements = session.query(
                     Achievement,

@@ -13,11 +13,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from coding.tornado.modules.auth.services import auth_service
-from coding.tornado.modules.tenant.services import tenant_service
+from webapp.modules.auth.services import auth_service
+from webapp.modules.tenant.services import tenant_service
 from database.connection import get_db_session
 from database.models import User, Tenant, TenantMember
-from tornado.utils.password_utils import hash_password
+from webapp.utils.password_utils import hash_password
 
 
 async def test_auth_service():

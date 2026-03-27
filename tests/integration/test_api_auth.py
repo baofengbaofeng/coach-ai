@@ -5,10 +5,10 @@
 
 import json
 import pytest
-from tornado.testing import AsyncHTTPTestCase
-from tornado.web import Application
+from webapp.testing import AsyncHTTPTestCase
+from webapp.web import Application
 
-from coding.tornado.core.application import create_application
+from webapp.core.application import create_application
 from coding.config import config
 
 

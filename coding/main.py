@@ -11,8 +11,8 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from coding.config import init_config, get_config
-from coding.tornado.core.application import create_application
+from config import init_config, get_config
+from webapp.core.application import create_application
 
 
 def setup_logging():

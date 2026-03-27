@@ -10,7 +10,7 @@ from loguru import logger
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session, scoped_session
 
-from coding.config import config
+from config import config
 
 
 class DatabaseConnectionManager:

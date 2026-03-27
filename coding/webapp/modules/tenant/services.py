@@ -8,9 +8,9 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, Tuple, List
 
-from coding.database.connection import get_db_session
-from coding.database.models.tenant import Tenant, TenantMember
-from coding.database.models.user import User
+from database.connection import get_db_session
+from database.models.tenant import Tenant, TenantMember
+from database.models.user import User
 from coding.tornado.utils.jwt_utils import create_jwt_token
 
 logger = logging.getLogger(__name__)

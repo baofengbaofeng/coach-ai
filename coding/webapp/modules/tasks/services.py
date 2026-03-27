@@ -9,7 +9,7 @@ from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc, asc, func
 
-from coding.database.models import (
+from database.models import (
     Task, TaskAssignment, TaskSubmission, TaskEvaluation,
     User, Tenant, ExerciseType
 )

@@ -8,7 +8,7 @@ from typing import Optional, Dict, Any
 from loguru import logger
 from tornado.web import RequestHandler, HTTPError
 
-from coding.config import config
+from config import config
 from tornado.utils.jwt_utils import decode_token, TokenType
 from tornado.core.exceptions import AuthenticationError, AuthorizationError
 

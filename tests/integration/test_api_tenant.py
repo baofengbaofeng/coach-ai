@@ -5,9 +5,9 @@
 
 import json
 import pytest
-from tornado.testing import AsyncHTTPTestCase
+from webapp.testing import AsyncHTTPTestCase
 
-from coding.tornado.core.application import create_application
+from webapp.core.application import create_application
 from coding.config import config
 
 

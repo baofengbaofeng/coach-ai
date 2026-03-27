@@ -9,7 +9,7 @@ from typing import Callable, Any
 from loguru import logger
 from tornado.web import RequestHandler
 
-from coding.config import config
+from config import config
 
 
 class RequestLoggingMiddleware:
@@ -62,7 +62,7 @@ class TenantMiddleware:
     
     async def prepare(self) -> None:
         """在请求处理前执行，提取租户ID"""
-        from coding.config import get_config
+        from config import get_config
         config = get_config()
         
         # 从请求头获取租户ID
