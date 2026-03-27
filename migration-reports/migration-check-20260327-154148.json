@@ -1,0 +1,25 @@
+{
+  "project": "CoachAI",
+  "check_time": "2026-03-27T15:41:48.263044",
+  "duration_seconds": 0.017725,
+  "overall_status": "failed",
+  "migration_status": {
+    "domain_layer": false,
+    "application_layer": false,
+    "interface_layer": true,
+    "infrastructure_layer": true,
+    "web_layer": true,
+    "database_config": true,
+    "deployment_config": true,
+    "testing_config": true,
+    "documentation": true
+  },
+  "summary": {
+    "total_checks": 9,
+    "passed_checks": 7,
+    "failed_checks": 2
+  },
+  "recommendations": [
+    "Some checks failed. Please fix issues before cleanup."
+  ]
+}
