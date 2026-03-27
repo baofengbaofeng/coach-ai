@@ -28,10 +28,10 @@ cd coach-ai
 #### 2. Docker部署
 ```bash
 # 开发环境
-./scripts/deploy.sh dev -b -u
+./deploy/scripts/deploy.sh dev -b -u
 
 # 生产环境
-./scripts/deploy.sh production -b -u -m
+./deploy/scripts/deploy.sh production -b -u -m
 ```
 
 #### 3. 访问应用
@@ -147,13 +147,13 @@ python tests/ddd/integration/test_ddd_api.py
 ### 开发环境
 ```bash
 # 一键部署
-./scripts/deploy.sh dev -b -u -m
+./deploy/scripts/deploy.sh dev -b -u -m
 
 # 查看状态
-./scripts/deploy.sh -s
+./deploy/scripts/deploy.sh -s
 
 # 查看日志
-./scripts/deploy.sh -l
+./deploy/scripts/deploy.sh -l
 ```
 
 ### 生产环境
@@ -163,22 +163,22 @@ cp .env.example .env.production
 # 编辑 .env.production 文件
 
 # 部署生产环境
-./scripts/deploy.sh production -b -u -m
+./deploy/scripts/deploy.sh production -b -u -m
 
 # 启用监控
-./scripts/deploy.sh production --monitor
+./deploy/scripts/deploy.sh production --monitor
 ```
 
 ### 数据库管理
 ```bash
 # 备份数据库
-./scripts/deploy.sh production --backup
+./deploy/scripts/deploy.sh production --backup
 
 # 恢复数据库
-./scripts/deploy.sh production --restore backup_file.sql
+./deploy/scripts/deploy.sh production --restore backup_file.sql
 
 # 运行迁移
-./scripts/deploy.sh production -m
+./deploy/scripts/deploy.sh production -m
 ```
 
 ## 🔄 迁移历史
