@@ -8,7 +8,6 @@ from .db_simple import (
     db_manager,
     init_database,
     get_db,
-    # 注意：health_check和get_stats是类方法，不是函数
 )
 
 from .redis import (
@@ -16,9 +15,10 @@ from .redis import (
     redis_client,
     get_redis,
     init_redis,
-    health_check as redis_health_check,
-    get_stats as redis_get_stats,
 )
+
+from .persistence.base import Repository, UnitOfWork, DatabaseUnitOfWork
+from .persistence.user_repository import UserRepository, TenantRepository, PermissionRepository
 
 __all__ = [
     # 数据库
@@ -26,17 +26,18 @@ __all__ = [
     'db_manager',
     'init_database',
     'get_db',
-    'execute_query',
-    'execute_update',
-    'execute_many',
-    'db_health_check',
-    'db_get_stats',
     
     # Redis
     'RedisClient',
     'redis_client',
     'get_redis',
     'init_redis',
-    'redis_health_check',
-    'redis_get_stats',
+    
+    # 持久化
+    'Repository',
+    'UnitOfWork',
+    'DatabaseUnitOfWork',
+    'UserRepository',
+    'TenantRepository',
+    'PermissionRepository',
 ]
