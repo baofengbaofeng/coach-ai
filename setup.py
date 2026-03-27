@@ -19,8 +19,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/coach-ai/coach-ai",
-    packages=find_packages(where="code"),
-    package_dir={"": "code"},
+    packages=find_packages(where="coding"),
+    package_dir={"": "coding"},
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
@@ -48,7 +48,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "coach-ai=main:main",
+            "coach-ai=coding.main:main",
         ],
     },
 )
