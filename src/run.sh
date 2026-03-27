@@ -148,15 +148,15 @@ run_tests() {
     
     # 运行单元测试
     echo -e "${BLUE}运行单元测试...${NC}"
-    python -m pytest tests/unit/ -v
+    python -m pytest src/tests/unit/ -v
     
     # 运行集成测试
     echo -e "${BLUE}运行集成测试...${NC}"
-    python -m pytest tests/integration/ -v
+    python -m pytest src/tests/integration/ -v
     
     # 运行系统测试
     echo -e "${BLUE}运行系统测试...${NC}"
-    python -m pytest tests/system/ -v
+    python -m pytest src/tests/system/ -v
     
     echo -e "${GREEN}✓ 测试完成${NC}"
 }

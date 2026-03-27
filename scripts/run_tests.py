@@ -33,27 +33,27 @@ class TestRunner:
         # 测试配置
         self.test_config = {
             "unit_tests": {
-                "path": "tests/unit",
+                "path": "src/tests/unit",
                 "pattern": "test_*.py",
                 "marker": "unit"
             },
             "integration_tests": {
-                "path": "tests/integration",
+                "path": "src/tests/integration",
                 "pattern": "test_*.py",
                 "marker": "integration"
             },
             "ddd_unit_tests": {
-                "path": "tests/ddd/unit",
+                "path": "src/tests/ddd/unit",
                 "pattern": "test_*.py",
                 "marker": "ddd_unit"
             },
             "ddd_integration_tests": {
-                "path": "tests/ddd/integration",
+                "path": "src/tests/ddd/integration",
                 "pattern": "test_*.py",
                 "marker": "ddd_integration"
             },
             "api_tests": {
-                "path": "tests/integration",
+                "path": "src/tests/integration",
                 "pattern": "test_api_*.py",
                 "marker": "api"
             }

@@ -219,15 +219,15 @@ run_tests() {
     
     # 运行单元测试
     log_info "运行单元测试..."
-    pytest tests/unit/ -v
+    pytest src/tests/unit/ -v
     
     # 运行集成测试
     log_info "运行集成测试..."
-    pytest tests/integration/ -v
+    pytest src/tests/integration/ -v
     
     # 运行API测试
     log_info "运行API测试..."
-    pytest tests/api/ -v
+    pytest src/tests/api/ -v
     
     log_success "测试完成"
 }
