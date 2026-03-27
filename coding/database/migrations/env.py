@@ -16,9 +16,9 @@ from alembic import context
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # 导入配置和模型
-from config import config as app_config
-from tornado.modules.auth.models import User, Permission, Role, UserRole, RolePermission
-from tornado.modules.tenant.models import Tenant, TenantMember
+from coding.config import coding.config as app_config
+from coding.tornado.modules.auth.models import User, Permission, Role, UserRole, RolePermission
+from coding.tornado.modules.tenant.models import Tenant, TenantMember
 
 # Alembic配置对象
 config = context.config
@@ -34,8 +34,8 @@ target_metadata = None
 def import_all_models():
     """导入所有模型以确保元数据完整"""
     # 这里导入所有模型模块
-    from tornado.modules.auth import models as auth_models
-    from tornado.modules.tenant import models as tenant_models
+    from coding.tornado.modules.auth import models as auth_models
+    from coding.tornado.modules.tenant import models as tenant_models
     
     # 返回合并的元数据
     from sqlalchemy import MetaData

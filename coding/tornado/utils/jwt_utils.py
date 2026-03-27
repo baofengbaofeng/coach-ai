@@ -9,7 +9,46 @@ from typing import Dict, Optional, Any
 import jwt
 from loguru import logger
 
-from config import config
+from coding.config import config
+
+
+# 创建工具类实例
+_jwt_utils = None
+
+def get_jwt_utils():
+    """获取JWT工具实例"""
+    global _jwt_utils
+    if _jwt_utils is None:
+        _jwt_utils = JWTUtils()
+    return _jwt_utils
+
+
+def create_jwt_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    """
+    创建JWT令牌（兼容性函数）
+    
+    Args:
+        data: 要编码的数据
+        expires_delta: 过期时间增量
+        
+    Returns:
+        JWT令牌字符串
+    """
+    return get_jwt_utils().create_access_token(data, expires_delta)
+
+
+def verify_jwt_token(token: str, secret_key: Optional[str] = None) -> Dict[str, Any]:
+    """
+    验证JWT令牌（兼容性函数）
+    
+    Args:
+        token: JWT令牌
+        secret_key: 密钥，如果为None则使用配置中的密钥
+        
+    Returns:
+        解码后的数据
+    """
+    return get_jwt_utils().verify_token(token, secret_key)
 
 
 class JWTUtils:

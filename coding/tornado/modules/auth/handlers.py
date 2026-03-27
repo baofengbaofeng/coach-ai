@@ -7,9 +7,9 @@ import logging
 from typing import Dict, Any
 
 from tornado.web import RequestHandler
-from tornado.core.base_handler import BaseHandler
-from tornado.core.exceptions import ValidationError, AuthenticationError
-from tornado.core.error_handler import handle_error
+from coding.tornado.core.base_handler import BaseHandler
+from coding.tornado.core.exceptions import ValidationError, AuthenticationError
+from coding.tornado.core.error_handler import handle_error
 
 from .services import auth_service
 
@@ -541,5 +541,5 @@ class ProfileHandler(BaseHandler):
 
 
 # 导入需要的模块
-from database.connection import get_db_session
-from database.models.user import User
+from coding.database.connection import get_db_session
+from coding.database.models.user import User

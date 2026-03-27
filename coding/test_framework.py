@@ -9,7 +9,7 @@ import os
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from config import config
+from coding.config import config
 from tornado.core.exceptions import ValidationError, AuthenticationError
 from tornado.utils.password_utils import PasswordUtils
 from tornado.utils.jwt_utils import JWTUtils

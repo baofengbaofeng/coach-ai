@@ -7,11 +7,11 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, Tuple
 
-from tornado.utils.jwt_utils import create_jwt_token, verify_jwt_token
-from tornado.utils.password_utils import hash_password, verify_password
-from database.connection import get_db_session
-from database.models.user import User
-from database.models.tenant import Tenant, TenantMember
+from coding.tornado.utils.jwt_utils import create_jwt_token, verify_jwt_token
+from coding.tornado.utils.password_utils import hash_password, verify_password
+from coding.database.connection import get_db_session
+from coding.database.models.user import User
+from coding.database.models.tenant import Tenant, TenantMember
 
 logger = logging.getLogger(__name__)
 

@@ -12,11 +12,11 @@ class RegisterRequest(BaseModel):
     """
     注册请求模型
     """
-    username: str = Field(..., min_length=3, max_length=50, description="用户名")
-    email: EmailStr = Field(..., description="邮箱地址")
-    password: str = Field(..., min_length=8, max_length=100, description="密码")
-    display_name: Optional[str] = Field(None, max_length=100, description="显示名称")
-    phone: Optional[str] = Field(None, max_length=20, description="手机号")
+    username: str
+    email: EmailStr
+    password: str
+    display_name: Optional[str] = None
+    phone: Optional[str] = None
     
     @validator('username')
     def validate_username(cls, v):
@@ -42,32 +42,32 @@ class LoginRequest(BaseModel):
     """
     登录请求模型
     """
-    identifier: str = Field(..., description="用户名或邮箱")
-    password: str = Field(..., description="密码")
+    identifier: str
+    password: str
 
 
 class PasswordResetRequest(BaseModel):
     """
     密码重置请求模型
     """
-    email: EmailStr = Field(..., description="邮箱地址")
+    email: EmailStr 
 
 
 class PasswordResetConfirmRequest(BaseModel):
     """
     密码重置确认请求模型
     """
-    token: str = Field(..., description="密码重置令牌")
-    password: str = Field(..., min_length=8, max_length=100, description="新密码")
+    token: str
+    password: str
 
 
 class ProfileUpdateRequest(BaseModel):
     """
     资料更新请求模型
     """
-    display_name: Optional[str] = Field(None, max_length=100, description="显示名称")
-    avatar_url: Optional[str] = Field(None, description="头像URL")
-    phone: Optional[str] = Field(None, max_length=20, description="手机号")
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    phone: Optional[str] = None
     
     @validator('phone')
     def validate_phone(cls, v):
@@ -84,86 +84,86 @@ class UserResponse(BaseModel):
     """
     用户响应模型
     """
-    id: str = Field(..., description="用户ID")
-    username: str = Field(..., description="用户名")
-    email: str = Field(..., description="邮箱")
-    display_name: Optional[str] = Field(None, description="显示名称")
-    avatar_url: Optional[str] = Field(None, description="头像URL")
-    phone: Optional[str] = Field(None, description="手机号")
-    email_verified: bool = Field(..., description="邮箱验证状态")
-    phone_verified: bool = Field(..., description="手机验证状态")
-    status: str = Field(..., description="用户状态")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str
+    username: str
+    email: str
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    phone: Optional[str] = None
+    email_verified: bool 
+    phone_verified: bool 
+    status: str
+    created_at: datetime 
+    updated_at: datetime 
 
 
 class TenantInfoResponse(BaseModel):
     """
     租户信息响应模型
     """
-    id: str = Field(..., description="租户ID")
-    name: str = Field(..., description="租户名称")
-    code: str = Field(..., description="租户代码")
-    role: str = Field(..., description="用户角色")
-    joined_at: Optional[datetime] = Field(None, description="加入时间")
+    id: str
+    name: str
+    code: str
+    role: str
+    joined_at: Optional[datetime] = None
 
 
 class LoginResponse(BaseModel):
     """
     登录响应模型
     """
-    token: str = Field(..., description="JWT令牌")
-    user: UserResponse = Field(..., description="用户信息")
-    tenants: List[TenantInfoResponse] = Field(default_factory=list, description="租户列表")
-    expires_in: int = Field(..., description="令牌过期时间（秒）")
+    token: str
+    user: UserResponse 
+    tenants: List[TenantInfoResponse] 
+    expires_in: int 
 
 
 class RegisterResponse(BaseModel):
     """
     注册响应模型
     """
-    user: UserResponse = Field(..., description="用户信息")
-    message: str = Field(..., description="提示消息")
+    user: UserResponse 
+    message: str
 
 
 class ProfileResponse(BaseModel):
     """
     资料响应模型
     """
-    user: UserResponse = Field(..., description="用户信息")
-    tenants: List[TenantInfoResponse] = Field(default_factory=list, description="租户列表")
+    user: UserResponse 
+    tenants: List[TenantInfoResponse] 
 
 
 class TokenVerifyResponse(BaseModel):
     """
     令牌验证响应模型
     """
-    valid: bool = Field(..., description="令牌是否有效")
-    user: Optional[UserResponse] = Field(None, description="用户信息")
+    valid: bool 
+    user: Optional[UserResponse] = None
 
 
 class TokenRefreshResponse(BaseModel):
     """
     令牌刷新响应模型
     """
-    token: str = Field(..., description="新的JWT令牌")
-    expires_in: int = Field(..., description="令牌过期时间（秒）")
+    token: str
+    expires_in: int 
 
 
 class MessageResponse(BaseModel):
     """
     通用消息响应模型
     """
-    message: str = Field(..., description="消息内容")
+    message: str
 
 
 class ErrorResponse(BaseModel):
     """
     错误响应模型
     """
-    error: str = Field(..., description="错误代码")
-    message: str = Field(..., description="错误消息")
-    details: Optional[Dict[str, Any]] = Field(None, description="错误详情")
+    error: str
+    message: str
+    details: Optional[Dict[str, Any]] = None
 
 
 # API文档标签和描述

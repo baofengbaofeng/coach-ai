@@ -68,147 +68,147 @@ class EvaluationStatus(str, Enum):
 
 class TaskCreateRequest(BaseModel):
     """创建任务请求模型"""
-    title: str = Field(..., min_length=1, max_length=200, description="任务标题")
-    description: Optional[str] = Field(None, description="任务描述")
+    title: str 
+    description: Optional[str] = None
     task_type: TaskType = Field(TaskType.HOMEWORK, description="任务类型")
     priority: TaskPriority = Field(TaskPriority.MEDIUM, description="任务优先级")
     difficulty: TaskDifficulty = Field(TaskDifficulty.BEGINNER, description="任务难度")
-    tags: Optional[List[str]] = Field(default_factory=list, description="任务标签")
-    content: Optional[Dict[str, Any]] = Field(None, description="任务内容")
-    start_time: Optional[datetime] = Field(None, description="任务开始时间")
-    deadline: Optional[datetime] = Field(None, description="任务截止时间")
-    estimated_duration: Optional[int] = Field(None, ge=1, description="预计完成时间（分钟）")
-    prerequisites: Optional[str] = Field(None, description="任务前置条件")
-    completion_criteria: Optional[str] = Field(None, description="任务完成条件")
-    scoring_criteria: Optional[str] = Field(None, description="任务评分标准")
-    exercise_type_id: Optional[str] = Field(None, description="关联的运动类型ID")
+    tags: Optional[List[str]] 
+    content: Optional[Dict[str, Any]] = None
+    start_time: Optional[datetime] = None
+    deadline: Optional[datetime] = None
+    estimated_duration: Optional[int] = None
+    prerequisites: Optional[str] = None
+    completion_criteria: Optional[str] = None
+    scoring_criteria: Optional[str] = None
+    exercise_type_id: Optional[str] = None
 
 
 class TaskUpdateRequest(BaseModel):
     """更新任务请求模型"""
-    title: Optional[str] = Field(None, min_length=1, max_length=200, description="任务标题")
-    description: Optional[str] = Field(None, description="任务描述")
-    task_type: Optional[TaskType] = Field(None, description="任务类型")
-    status: Optional[TaskStatus] = Field(None, description="任务状态")
-    priority: Optional[TaskPriority] = Field(None, description="任务优先级")
-    difficulty: Optional[TaskDifficulty] = Field(None, description="任务难度")
-    tags: Optional[List[str]] = Field(None, description="任务标签")
-    content: Optional[Dict[str, Any]] = Field(None, description="任务内容")
-    start_time: Optional[datetime] = Field(None, description="任务开始时间")
-    deadline: Optional[datetime] = Field(None, description="任务截止时间")
-    estimated_duration: Optional[int] = Field(None, ge=1, description="预计完成时间（分钟）")
-    prerequisites: Optional[str] = Field(None, description="任务前置条件")
-    completion_criteria: Optional[str] = Field(None, description="任务完成条件")
-    scoring_criteria: Optional[str] = Field(None, description="任务评分标准")
+    title: Optional[str] = None
+    description: Optional[str] = None
+    task_type: Optional[TaskType] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    difficulty: Optional[TaskDifficulty] = None
+    tags: Optional[List[str]] = None
+    content: Optional[Dict[str, Any]] = None
+    start_time: Optional[datetime] = None
+    deadline: Optional[datetime] = None
+    estimated_duration: Optional[int] = None
+    prerequisites: Optional[str] = None
+    completion_criteria: Optional[str] = None
+    scoring_criteria: Optional[str] = None
 
 
 class TaskAssignmentRequest(BaseModel):
     """任务分配请求模型"""
-    task_id: str = Field(..., description="任务ID")
-    student_id: str = Field(..., description="学员ID")
-    assignment_notes: Optional[str] = Field(None, description="分配备注")
-    expected_completion_at: Optional[datetime] = Field(None, description="预计完成时间")
-    reminder_settings: Optional[Dict[str, Any]] = Field(None, description="提醒设置")
+    task_id: str 
+    student_id: str 
+    assignment_notes: Optional[str] = None
+    expected_completion_at: Optional[datetime] = None
+    reminder_settings: Optional[Dict[str, Any]] = None
 
 
 class TaskAssignmentUpdateRequest(BaseModel):
     """任务分配更新请求模型"""
-    status: Optional[AssignmentStatus] = Field(None, description="分配状态")
-    progress: Optional[float] = Field(None, ge=0, le=100, description="进度百分比")
-    student_notes: Optional[str] = Field(None, description="学员备注")
-    progress_details: Optional[Dict[str, Any]] = Field(None, description="进度详情")
-    expected_completion_at: Optional[datetime] = Field(None, description="预计完成时间")
+    status: Optional[AssignmentStatus] = None
+    progress: Optional[float] = None
+    student_notes: Optional[str] = None
+    progress_details: Optional[Dict[str, Any]] = None
+    expected_completion_at: Optional[datetime] = None
 
 
 class TaskSubmissionRequest(BaseModel):
     """任务提交请求模型"""
-    assignment_id: str = Field(..., description="任务分配ID")
-    content: Dict[str, Any] = Field(..., description="提交内容")
-    submission_notes: Optional[str] = Field(None, description="提交备注")
-    attachments: Optional[List[Dict[str, Any]]] = Field(default_factory=list, description="附件列表")
+    assignment_id: str 
+    content: Dict[str, Any] 
+    submission_notes: Optional[str] = None
+    attachments: Optional[List[Dict[str, Any]]] 
     is_final: bool = Field(False, description="是否为最终提交")
 
 
 class TaskSubmissionReviewRequest(BaseModel):
     """任务提交审核请求模型"""
-    status: SubmissionStatus = Field(..., description="审核状态")
-    review_notes: Optional[str] = Field(None, description="审核备注")
+    status: SubmissionStatus 
+    review_notes: Optional[str] = None
 
 
 class TaskEvaluationRequest(BaseModel):
     """任务评价请求模型"""
-    assignment_id: str = Field(..., description="任务分配ID")
-    submission_id: Optional[str] = Field(None, description="任务提交ID")
-    overall_score: float = Field(..., ge=0, le=100, description="总体评分")
-    score_details: Optional[Dict[str, float]] = Field(None, description="评分详情")
-    comments: Optional[str] = Field(None, description="评语")
-    strengths: Optional[str] = Field(None, description="优点")
-    areas_for_improvement: Optional[str] = Field(None, description="待改进点")
-    improvement_suggestions: Optional[str] = Field(None, description="改进建议")
-    next_goals: Optional[str] = Field(None, description="下次目标")
+    assignment_id: str 
+    submission_id: Optional[str] = None
+    overall_score: float 
+    score_details: Optional[Dict[str, float]] = None
+    comments: Optional[str] = None
+    strengths: Optional[str] = None
+    areas_for_improvement: Optional[str] = None
+    improvement_suggestions: Optional[str] = None
+    next_goals: Optional[str] = None
     recommended_for_advancement: bool = Field(False, description="是否推荐进阶")
-    recommended_next_task_id: Optional[str] = Field(None, description="推荐的下个任务ID")
+    recommended_next_task_id: Optional[str] = None
 
 
 class TaskEvaluationUpdateRequest(BaseModel):
     """任务评价更新请求模型"""
-    overall_score: Optional[float] = Field(None, ge=0, le=100, description="总体评分")
-    score_details: Optional[Dict[str, float]] = Field(None, description="评分详情")
-    comments: Optional[str] = Field(None, description="评语")
-    strengths: Optional[str] = Field(None, description="优点")
-    areas_for_improvement: Optional[str] = Field(None, description="待改进点")
-    improvement_suggestions: Optional[str] = Field(None, description="改进建议")
-    next_goals: Optional[str] = Field(None, description="下次目标")
-    recommended_for_advancement: Optional[bool] = Field(None, description="是否推荐进阶")
-    recommended_next_task_id: Optional[str] = Field(None, description="推荐的下个任务ID")
-    status: Optional[EvaluationStatus] = Field(None, description="评价状态")
+    overall_score: Optional[float] = None
+    score_details: Optional[Dict[str, float]] = None
+    comments: Optional[str] = None
+    strengths: Optional[str] = None
+    areas_for_improvement: Optional[str] = None
+    improvement_suggestions: Optional[str] = None
+    next_goals: Optional[str] = None
+    recommended_for_advancement: Optional[bool] = None
+    recommended_next_task_id: Optional[str] = None
+    status: Optional[EvaluationStatus] = None
 
 
 class TaskFilter(BaseModel):
     """任务筛选条件"""
-    task_type: Optional[TaskType] = Field(None, description="任务类型")
-    status: Optional[TaskStatus] = Field(None, description="任务状态")
-    priority: Optional[TaskPriority] = Field(None, description="任务优先级")
-    difficulty: Optional[TaskDifficulty] = Field(None, description="任务难度")
-    creator_id: Optional[str] = Field(None, description="创建者ID")
-    tenant_id: Optional[str] = Field(None, description="租户ID")
-    start_time_from: Optional[datetime] = Field(None, description="开始时间从")
-    start_time_to: Optional[datetime] = Field(None, description="开始时间到")
-    deadline_from: Optional[datetime] = Field(None, description="截止时间从")
-    deadline_to: Optional[datetime] = Field(None, description="截止时间到")
-    tags: Optional[List[str]] = Field(None, description="标签")
-    search: Optional[str] = Field(None, description="搜索关键词")
+    task_type: Optional[TaskType] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    difficulty: Optional[TaskDifficulty] = None
+    creator_id: Optional[str] = None
+    tenant_id: Optional[str] = None
+    start_time_from: Optional[datetime] = None
+    start_time_to: Optional[datetime] = None
+    deadline_from: Optional[datetime] = None
+    deadline_to: Optional[datetime] = None
+    tags: Optional[List[str]] = None
+    search: Optional[str] = None
 
 
 class TaskAssignmentFilter(BaseModel):
     """任务分配筛选条件"""
-    task_id: Optional[str] = Field(None, description="任务ID")
-    student_id: Optional[str] = Field(None, description="学员ID")
-    assigner_id: Optional[str] = Field(None, description="分配者ID")
-    status: Optional[AssignmentStatus] = Field(None, description="分配状态")
-    tenant_id: Optional[str] = Field(None, description="租户ID")
-    assigned_at_from: Optional[datetime] = Field(None, description="分配时间从")
-    assigned_at_to: Optional[datetime] = Field(None, description="分配时间到")
-    expected_completion_at_from: Optional[datetime] = Field(None, description="预计完成时间从")
-    expected_completion_at_to: Optional[datetime] = Field(None, description="预计完成时间到")
-    is_overdue: Optional[bool] = Field(None, description="是否过期")
+    task_id: Optional[str] = None
+    student_id: Optional[str] = None
+    assigner_id: Optional[str] = None
+    status: Optional[AssignmentStatus] = None
+    tenant_id: Optional[str] = None
+    assigned_at_from: Optional[datetime] = None
+    assigned_at_to: Optional[datetime] = None
+    expected_completion_at_from: Optional[datetime] = None
+    expected_completion_at_to: Optional[datetime] = None
+    is_overdue: Optional[bool] = None
 
 
 class TaskAnalyticsRequest(BaseModel):
     """任务分析请求模型"""
-    start_date: datetime = Field(..., description="开始日期")
-    end_date: datetime = Field(..., description="结束日期")
-    tenant_id: Optional[str] = Field(None, description="租户ID")
-    student_id: Optional[str] = Field(None, description="学员ID")
-    task_type: Optional[TaskType] = Field(None, description="任务类型")
+    start_date: datetime 
+    end_date: datetime 
+    tenant_id: Optional[str] = None
+    student_id: Optional[str] = None
+    task_type: Optional[TaskType] = None
     group_by: Optional[str] = Field("day", description="分组方式：day, week, month, task_type, difficulty")
 
 
 class TaskSchedulerRequest(BaseModel):
     """任务调度请求模型"""
-    student_id: str = Field(..., description="学员ID")
-    start_date: datetime = Field(..., description="开始日期")
-    end_date: datetime = Field(..., description="结束日期")
+    student_id: str 
+    start_date: datetime 
+    end_date: datetime 
     max_tasks_per_day: int = Field(5, ge=1, le=20, description="每天最大任务数")
     consider_difficulty: bool = Field(True, description="是否考虑难度")
     consider_priority: bool = Field(True, description="是否考虑优先级")
@@ -217,24 +217,24 @@ class TaskSchedulerRequest(BaseModel):
 
 class TaskResponse(BaseModel):
     """任务响应模型"""
-    id: str = Field(..., description="任务ID")
-    title: str = Field(..., description="任务标题")
-    description: Optional[str] = Field(None, description="任务描述")
-    task_type: TaskType = Field(..., description="任务类型")
-    status: TaskStatus = Field(..., description="任务状态")
-    priority: TaskPriority = Field(..., description="任务优先级")
-    difficulty: TaskDifficulty = Field(..., description="任务难度")
-    tags: List[str] = Field(default_factory=list, description="任务标签")
-    content: Optional[Dict[str, Any]] = Field(None, description="任务内容")
-    start_time: Optional[datetime] = Field(None, description="任务开始时间")
-    deadline: Optional[datetime] = Field(None, description="任务截止时间")
-    estimated_duration: Optional[int] = Field(None, description="预计完成时间（分钟）")
-    actual_duration: Optional[int] = Field(None, description="实际完成时间（分钟）")
-    creator_id: str = Field(..., description="创建者ID")
-    tenant_id: str = Field(..., description="租户ID")
-    exercise_type_id: Optional[str] = Field(None, description="关联的运动类型ID")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str 
+    title: str 
+    description: Optional[str] = None
+    task_type: TaskType 
+    status: TaskStatus 
+    priority: TaskPriority 
+    difficulty: TaskDifficulty 
+    tags: List[str] 
+    content: Optional[Dict[str, Any]] = None
+    start_time: Optional[datetime] = None
+    deadline: Optional[datetime] = None
+    estimated_duration: Optional[int] = None
+    actual_duration: Optional[int] = None
+    creator_id: str 
+    tenant_id: str 
+    exercise_type_id: Optional[str] = None
+    created_at: datetime 
+    updated_at: datetime 
     
     class Config:
         json_encoders = {
@@ -244,20 +244,20 @@ class TaskResponse(BaseModel):
 
 class TaskAssignmentResponse(BaseModel):
     """任务分配响应模型"""
-    id: str = Field(..., description="分配ID")
-    task_id: str = Field(..., description="任务ID")
-    student_id: str = Field(..., description="学员ID")
-    assigner_id: str = Field(..., description="分配者ID")
-    status: AssignmentStatus = Field(..., description="分配状态")
-    progress: float = Field(..., description="进度百分比")
-    assigned_at: datetime = Field(..., description="分配时间")
-    started_at: Optional[datetime] = Field(None, description="开始时间")
-    completed_at: Optional[datetime] = Field(None, description="完成时间")
-    expected_completion_at: Optional[datetime] = Field(None, description="预计完成时间")
-    actual_completion_at: Optional[datetime] = Field(None, description="实际完成时间")
-    tenant_id: str = Field(..., description="租户ID")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str 
+    task_id: str 
+    student_id: str 
+    assigner_id: str 
+    status: AssignmentStatus 
+    progress: float 
+    assigned_at: datetime 
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    expected_completion_at: Optional[datetime] = None
+    actual_completion_at: Optional[datetime] = None
+    tenant_id: str 
+    created_at: datetime 
+    updated_at: datetime 
     
     class Config:
         json_encoders = {
@@ -267,19 +267,19 @@ class TaskAssignmentResponse(BaseModel):
 
 class TaskSubmissionResponse(BaseModel):
     """任务提交响应模型"""
-    id: str = Field(..., description="提交ID")
-    assignment_id: str = Field(..., description="任务分配ID")
-    submitter_id: str = Field(..., description="提交者ID")
-    status: SubmissionStatus = Field(..., description="提交状态")
-    content: Dict[str, Any] = Field(..., description="提交内容")
-    submitted_at: datetime = Field(..., description="提交时间")
-    reviewed_at: Optional[datetime] = Field(None, description="审核时间")
-    reviewer_id: Optional[str] = Field(None, description="审核者ID")
-    version: int = Field(..., description="版本号")
-    is_final: bool = Field(..., description="是否为最终提交")
-    tenant_id: str = Field(..., description="租户ID")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str 
+    assignment_id: str 
+    submitter_id: str 
+    status: SubmissionStatus 
+    content: Dict[str, Any] 
+    submitted_at: datetime 
+    reviewed_at: Optional[datetime] = None
+    reviewer_id: Optional[str] = None
+    version: int 
+    is_final: bool 
+    tenant_id: str 
+    created_at: datetime 
+    updated_at: datetime 
     
     class Config:
         json_encoders = {
@@ -289,21 +289,21 @@ class TaskSubmissionResponse(BaseModel):
 
 class TaskEvaluationResponse(BaseModel):
     """任务评价响应模型"""
-    id: str = Field(..., description="评价ID")
-    assignment_id: str = Field(..., description="任务分配ID")
-    submission_id: Optional[str] = Field(None, description="任务提交ID")
-    evaluator_id: str = Field(..., description="评价者ID")
-    student_id: str = Field(..., description="被评价者ID")
-    overall_score: float = Field(..., description="总体评分")
-    score_grade: str = Field(..., description="评分等级")
-    comments: Optional[str] = Field(None, description="评语")
-    evaluated_at: datetime = Field(..., description="评价时间")
-    status: EvaluationStatus = Field(..., description="评价状态")
-    recommended_for_advancement: bool = Field(..., description="是否推荐进阶")
-    recommended_next_task_id: Optional[str] = Field(None, description="推荐的下个任务ID")
-    tenant_id: str = Field(..., description="租户ID")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str 
+    assignment_id: str 
+    submission_id: Optional[str] = None
+    evaluator_id: str 
+    student_id: str 
+    overall_score: float 
+    score_grade: str 
+    comments: Optional[str] = None
+    evaluated_at: datetime 
+    status: EvaluationStatus 
+    recommended_for_advancement: bool 
+    recommended_next_task_id: Optional[str] = None
+    tenant_id: str 
+    created_at: datetime 
+    updated_at: datetime 
     
     class Config:
         json_encoders = {

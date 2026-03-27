@@ -11,13 +11,16 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-from coding.config import config
+from coding.config import init_config, get_config
 from coding.tornado.core.application import create_application
 
 
 def setup_logging():
     """配置日志系统"""
     logger.remove()  # 移除默认处理器
+    
+    # 初始化配置
+    config = init_config()
     
     # 添加控制台输出（英文日志）
     logger.add(
@@ -68,6 +71,7 @@ async def main():
     # 配置日志
     setup_logging()
     
+    config = get_config()
     logger.info(f"Starting CoachAI server in {config.APP_ENV} mode")
     logger.info(f"Database URL: {config.DATABASE_URL}")
     logger.info(f"Redis URL: {config.REDIS_URL}")

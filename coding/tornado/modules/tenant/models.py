@@ -12,15 +12,15 @@ class CreateTenantRequest(BaseModel):
     """
     创建租户请求模型
     """
-    name: str = Field(..., min_length=1, max_length=100, description="租户名称")
-    code: str = Field(..., min_length=3, max_length=50, description="租户代码")
-    description: Optional[str] = Field(None, description="租户描述")
+    name: str 
+    code: str 
+    description: Optional[str] = None
     type: str = Field('family', description="租户类型")
-    domain: Optional[str] = Field(None, max_length=255, description="域名")
-    logo_url: Optional[str] = Field(None, description="Logo URL")
-    cover_url: Optional[str] = Field(None, description="封面图片URL")
-    config: Optional[Dict[str, Any]] = Field(default_factory=dict, description="租户配置")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="租户元数据")
+    domain: Optional[str] = None
+    logo_url: Optional[str] = None
+    cover_url: Optional[str] = None
+    config: Optional[Dict[str, Any]] 
+    metadata: Optional[Dict[str, Any]] 
     max_members: int = Field(10, ge=1, le=1000, description="最大成员数")
     storage_limit_mb: int = Field(1024, ge=10, le=1048576, description="存储空间限制(MB)")
     subscription_plan: str = Field('free', description="订阅计划")
@@ -58,15 +58,15 @@ class UpdateTenantRequest(BaseModel):
     """
     更新租户请求模型
     """
-    name: Optional[str] = Field(None, min_length=1, max_length=100, description="租户名称")
-    description: Optional[str] = Field(None, description="租户描述")
-    domain: Optional[str] = Field(None, max_length=255, description="域名")
-    logo_url: Optional[str] = Field(None, description="Logo URL")
-    cover_url: Optional[str] = Field(None, description="封面图片URL")
-    config: Optional[Dict[str, Any]] = Field(None, description="租户配置")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="租户元数据")
-    max_members: Optional[int] = Field(None, ge=1, le=1000, description="最大成员数")
-    storage_limit_mb: Optional[int] = Field(None, ge=10, le=1048576, description="存储空间限制(MB)")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    domain: Optional[str] = None
+    logo_url: Optional[str] = None
+    cover_url: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
+    max_members: Optional[int] = None
+    storage_limit_mb: Optional[int] = None")
     
     @validator('domain')
     def validate_domain(cls, v):
@@ -85,10 +85,10 @@ class InviteMemberRequest(BaseModel):
     """
     邀请成员请求模型
     """
-    email: str = Field(..., description="被邀请用户邮箱")
+    email: str 
     role: str = Field('member', description="成员角色")
-    permissions: Optional[Dict[str, Any]] = Field(default_factory=dict, description="权限配置")
-    config: Optional[Dict[str, Any]] = Field(default_factory=dict, description="成员配置")
+    permissions: Optional[Dict[str, Any]] 
+    config: Optional[Dict[str, Any]] 
     
     @validator('role')
     def validate_role(cls, v):
@@ -103,7 +103,7 @@ class UpdateMemberRoleRequest(BaseModel):
     """
     更新成员角色请求模型
     """
-    role: str = Field(..., description="新角色")
+    role: str 
     
     @validator('role')
     def validate_role(cls, v):
@@ -118,118 +118,118 @@ class AcceptInvitationRequest(BaseModel):
     """
     接受邀请请求模型
     """
-    invite_token: str = Field(..., description="邀请令牌")
+    invite_token: str 
 
 
 class TenantResponse(BaseModel):
     """
     租户响应模型
     """
-    id: str = Field(..., description="租户ID")
-    name: str = Field(..., description="租户名称")
-    code: str = Field(..., description="租户代码")
-    description: Optional[str] = Field(None, description="租户描述")
-    type: str = Field(..., description="租户类型")
-    status: str = Field(..., description="租户状态")
-    owner_id: str = Field(..., description="所有者ID")
-    domain: Optional[str] = Field(None, description="域名")
-    logo_url: Optional[str] = Field(None, description="Logo URL")
-    cover_url: Optional[str] = Field(None, description="封面图片URL")
-    max_members: int = Field(..., description="最大成员数")
-    storage_limit_mb: int = Field(..., description="存储空间限制(MB)")
-    subscription_plan: str = Field(..., description="订阅计划")
-    subscription_expires_at: Optional[datetime] = Field(None, description="订阅过期时间")
-    member_count: int = Field(..., description="当前成员数量")
-    can_add_member: bool = Field(..., description="是否可以添加新成员")
-    created_at: datetime = Field(..., description="创建时间")
-    updated_at: datetime = Field(..., description="更新时间")
+    id: str 
+    name: str 
+    code: str 
+    description: Optional[str] = None
+    type: str 
+    status: str 
+    owner_id: str 
+    domain: Optional[str] = None
+    logo_url: Optional[str] = None
+    cover_url: Optional[str] = None
+    max_members: int 
+    storage_limit_mb: int ")
+    subscription_plan: str 
+    subscription_expires_at: Optional[datetime] = None
+    member_count: int 
+    can_add_member: bool 
+    created_at: datetime 
+    updated_at: datetime 
 
 
 class TenantMemberResponse(BaseModel):
     """
     租户成员响应模型
     """
-    id: str = Field(..., description="成员记录ID")
-    user_id: str = Field(..., description="用户ID")
-    username: str = Field(..., description="用户名")
-    email: str = Field(..., description="邮箱")
-    display_name: Optional[str] = Field(None, description="显示名称")
-    avatar_url: Optional[str] = Field(None, description="头像URL")
-    role: str = Field(..., description="成员角色")
-    status: str = Field(..., description="成员状态")
-    joined_at: Optional[datetime] = Field(None, description="加入时间")
-    permissions: Dict[str, Any] = Field(default_factory=dict, description="权限配置")
-    created_at: datetime = Field(..., description="创建时间")
+    id: str 
+    user_id: str 
+    username: str 
+    email: str 
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    role: str 
+    status: str 
+    joined_at: Optional[datetime] = None
+    permissions: Dict[str, Any] 
+    created_at: datetime 
 
 
 class UserTenantResponse(BaseModel):
     """
     用户租户响应模型
     """
-    id: str = Field(..., description="租户ID")
-    name: str = Field(..., description="租户名称")
-    code: str = Field(..., description="租户代码")
-    type: str = Field(..., description="租户类型")
-    status: str = Field(..., description="租户状态")
-    role: str = Field(..., description="用户角色")
-    member_count: int = Field(..., description="成员数量")
-    joined_at: Optional[datetime] = Field(None, description="加入时间")
-    created_at: datetime = Field(..., description="创建时间")
+    id: str 
+    name: str 
+    code: str 
+    type: str 
+    status: str 
+    role: str 
+    member_count: int 
+    joined_at: Optional[datetime] = None
+    created_at: datetime 
 
 
 class CreateTenantResponse(BaseModel):
     """
     创建租户响应模型
     """
-    tenant: TenantResponse = Field(..., description="租户信息")
-    message: str = Field(..., description="提示消息")
+    tenant: TenantResponse 
+    message: str 
 
 
 class UpdateTenantResponse(BaseModel):
     """
     更新租户响应模型
     """
-    tenant: TenantResponse = Field(..., description="租户信息")
-    message: str = Field(..., description="提示消息")
+    tenant: TenantResponse 
+    message: str 
 
 
 class GetTenantMembersResponse(BaseModel):
     """
     获取租户成员响应模型
     """
-    members: List[TenantMemberResponse] = Field(default_factory=list, description="成员列表")
-    total: int = Field(..., description="成员总数")
+    members: List[TenantMemberResponse] 
+    total: int 
 
 
 class InviteMemberResponse(BaseModel):
     """
     邀请成员响应模型
     """
-    invite_token: str = Field(..., description="邀请令牌")
-    message: str = Field(..., description="提示消息")
+    invite_token: str 
+    message: str 
 
 
 class GetUserTenantsResponse(BaseModel):
     """
     获取用户租户响应模型
     """
-    tenants: List[UserTenantResponse] = Field(default_factory=list, description="租户列表")
-    total: int = Field(..., description="租户总数")
+    tenants: List[UserTenantResponse] 
+    total: int 
 
 
 class SearchTenantsResponse(BaseModel):
     """
     搜索租户响应模型
     """
-    tenants: List[TenantResponse] = Field(default_factory=list, description="租户列表")
-    total: int = Field(..., description="租户总数")
+    tenants: List[TenantResponse] 
+    total: int 
 
 
 class MessageResponse(BaseModel):
     """
     通用消息响应模型
     """
-    message: str = Field(..., description="消息内容")
+    message: str 
 
 
 # API文档标签和描述

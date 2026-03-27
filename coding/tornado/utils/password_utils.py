@@ -7,6 +7,44 @@ import bcrypt
 from loguru import logger
 
 
+# 创建工具类实例
+_password_utils = None
+
+def get_password_utils():
+    """获取密码工具实例"""
+    global _password_utils
+    if _password_utils is None:
+        _password_utils = PasswordUtils()
+    return _password_utils
+
+
+def hash_password(password: str) -> str:
+    """
+    哈希密码（兼容性函数）
+    
+    Args:
+        password: 明文密码
+        
+    Returns:
+        哈希后的密码字符串
+    """
+    return get_password_utils().hash_password(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    验证密码（兼容性函数）
+    
+    Args:
+        plain_password: 明文密码
+        hashed_password: 哈希后的密码
+        
+    Returns:
+        密码是否匹配
+    """
+    return get_password_utils().verify_password(plain_password, hashed_password)
+
+
 class PasswordUtils:
     """密码工具类"""
     

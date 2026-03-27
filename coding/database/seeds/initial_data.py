@@ -11,10 +11,10 @@ from loguru import logger
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from database.connection import get_db_session
-from tornado.modules.auth.models import (
+from coding.tornado.modules.auth.models import (
     User, Permission, Role, UserRole, RolePermission
 )
-from tornado.modules.tenant.models import Tenant, TenantMember
+from coding.tornado.modules.tenant.models import Tenant, TenantMember
 from tornado.utils.password_utils import hash_password
 
 

@@ -9,7 +9,7 @@ from typing import Callable, Any
 from loguru import logger
 from tornado.web import RequestHandler
 
-from config import config
+from coding.config import config
 
 
 class RequestLoggingMiddleware:
@@ -62,6 +62,9 @@ class TenantMiddleware:
     
     async def prepare(self) -> None:
         """在请求处理前执行，提取租户ID"""
+        from coding.config import get_config
+        config = get_config()
+        
         # 从请求头获取租户ID
         tenant_id = self.handler.request.headers.get(config.TENANT_ID_HEADER, config.DEFAULT_TENANT_ID)
         
@@ -195,13 +198,20 @@ class MiddlewareManager:
             
             async def prepare(self) -> None:
                 """执行所有中间件的prepare方法"""
+                # 确保middlewares属性存在
+                if not hasattr(self, 'middlewares'):
+                    self.middlewares = []
                 for middleware in self.middlewares:
                     if hasattr(middleware, "prepare"):
                         await middleware.prepare()
-                await super().prepare()
+                # 调用父类的prepare方法
+                super().prepare()
             
             def on_finish(self) -> None:
                 """执行所有中间件的on_finish方法"""
+                # 确保middlewares属性存在
+                if not hasattr(self, 'middlewares'):
+                    self.middlewares = []
                 for middleware in self.middlewares:
                     if hasattr(middleware, "on_finish"):
                         middleware.on_finish()
@@ -209,6 +219,9 @@ class MiddlewareManager:
             
             def set_default_headers(self) -> None:
                 """执行所有中间件的set_default_headers方法"""
+                # 确保middlewares属性存在
+                if not hasattr(self, 'middlewares'):
+                    self.middlewares = []
                 for middleware in self.middlewares:
                     if hasattr(middleware, "set_default_headers"):
                         middleware.set_default_headers()

@@ -12,6 +12,64 @@ from tornado.web import RequestHandler, HTTPError
 from .exceptions import BaseAPIError
 
 
+def handle_error(handler: RequestHandler, error: Exception, logger_instance=None) -> None:
+    """
+    统一处理错误
+    
+    Args:
+        handler: RequestHandler实例
+        error: 异常实例
+        logger_instance: 日志记录器实例
+    """
+    if logger_instance is None:
+        logger_instance = logger
+    
+    # 记录错误
+    logger_instance.error(f"Error in {handler.__class__.__name__}: {str(error)}")
+    logger_instance.error(traceback.format_exc())
+    
+    # 处理不同类型的错误
+    if isinstance(error, BaseAPIError):
+        error_response = {
+            "success": False,
+            "error": {
+                "code": error.error_code,
+                "message": error.message,
+                "details": error.details
+            },
+            "timestamp": handler.request.request_time()
+        }
+        handler.set_status(error.status_code)
+        handler.write(error_response)
+    
+    elif isinstance(error, HTTPError):
+        error_response = {
+            "success": False,
+            "error": {
+                "code": f"HTTP_{error.status_code}",
+                "message": error.reason or "HTTP Error",
+                "details": {}
+            },
+            "timestamp": handler.request.request_time()
+        }
+        handler.set_status(error.status_code)
+        handler.write(error_response)
+    
+    else:
+        # 未知错误
+        error_response = {
+            "success": False,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "Internal server error",
+                "details": {}
+            },
+            "timestamp": handler.request.request_time()
+        }
+        handler.set_status(500)
+        handler.write(error_response)
+
+
 class ErrorHandler:
     """错误处理器"""
     

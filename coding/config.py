@@ -4,14 +4,14 @@
 """
 
 import warnings
-from config import init_config, get_config
+from coding.config import init_config, get_config
 
 # 初始化配置
 config = init_config()
 
 # 发出弃用警告
 warnings.warn(
-    "直接导入config模块已弃用，请使用from config import get_config",
+    "直接导入config模块已弃用，请使用from coding.config import get_config",
     DeprecationWarning,
     stacklevel=2
 )

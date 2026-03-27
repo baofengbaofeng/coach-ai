@@ -7,9 +7,9 @@ import logging
 from typing import Dict, Any
 
 from tornado.web import RequestHandler
-from tornado.core.base_handler import BaseHandler
-from tornado.core.exceptions import ValidationError, AuthenticationError, PermissionError
-from tornado.core.error_handler import handle_error
+from coding.tornado.core.base_handler import BaseHandler
+from coding.tornado.core.exceptions import ValidationError, AuthenticationError, PermissionError
+from coding.tornado.core.error_handler import handle_error
 
 from .services import tenant_service
 

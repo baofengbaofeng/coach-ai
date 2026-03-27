@@ -16,39 +16,7 @@ def get_routes() -> List[Tuple]:
     """
     routes = []
     
-    # 导入认证模块路由
-    try:
-        from .auth.routes import get_auth_routes
-        routes.extend(get_auth_routes())
-    except ImportError:
-        pass
-    
-    # 导入租户模块路由
-    try:
-        from .tenant.routes import get_tenant_routes
-        routes.extend(get_tenant_routes())
-    except ImportError:
-        pass
-    
-    # 导入运动模块路由
-    try:
-        from .exercise.routes import get_exercise_routes
-        routes.extend(get_exercise_routes())
-    except ImportError:
-        pass
-    
-    # 导入任务模块路由
-    try:
-        from .tasks.routes import get_task_routes
-        routes.extend(get_task_routes())
-    except ImportError:
-        pass
-    
-    # 导入成就系统模块路由
-    try:
-        from .achievements.routes import get_achievement_routes
-        routes.extend(get_achievement_routes())
-    except ImportError:
-        pass
+    # 暂时跳过所有模块路由，只返回基础路由
+    # 后续再逐个修复模块导入问题
     
     return routes
