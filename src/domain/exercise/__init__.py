@@ -8,14 +8,15 @@ from .value_objects import (
     Intensity, Repetition, Weight, Distance
 )
 from .entities import ExerciseType, ExerciseRecord, ExercisePlan
-from .services import ExerciseService, ExercisePlanService
+from .services_simple import ExerciseService, ExercisePlanService
 from .events import (
     ExerciseTypeCreatedEvent,
     ExerciseRecordCreatedEvent,
     ExerciseStartedEvent,
     ExerciseCompletedEvent,
     ExercisePlanCreatedEvent,
-    ExercisePlanUpdatedEvent
+    ExercisePlanUpdatedEvent,
+    ExerciseProgressEvent
 )
 
 __all__ = [
@@ -44,4 +45,5 @@ __all__ = [
     'ExerciseCompletedEvent',
     'ExercisePlanCreatedEvent',
     'ExercisePlanUpdatedEvent',
+    'ExerciseProgressEvent',
 ]
