@@ -1,212 +1,145 @@
 """
-CoachAI 主入口文件
-DDD架构 + EDA事件驱动架构
-"""
-
-import asyncio
-import signal
-import sys
-from typing import Optional
-from loguru import logger
-
-"""
-CoachAI 主入口文件 - 简化版
+CoachAI应用主入口（DDD迁移版）
+应用启动和初始化
 """
 
 import sys
 import os
+from loguru import logger
 
-# 确保可以导入同级模块
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# 添加项目根目录到Python路径
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_root)
 
-# 直接导入模块
-import settings
+# 配置日志
+logger.remove()  # 移除默认处理器
+logger.add(
+    sys.stderr,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    level="INFO"
+)
 
-# 配置
-config = settings.config
-init_config = settings.init_config
+# 添加文件日志（如果配置了日志文件）
+from src.settings import settings
+if settings.LOG_FILE:
+    logger.add(
+        settings.LOG_FILE,
+        rotation="500 MB",
+        retention="30 days",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+        level=settings.LOG_LEVEL
+    )
 
-# 由于导入问题，我们暂时简化
-# 在实际使用时会动态导入
 
-
-class Application:
-    """应用主类"""
+def init_application():
+    """初始化应用"""
+    logger.info("=" * 60)
+    logger.info("CoachAI Application Initialization")
+    logger.info("=" * 60)
     
-    def __init__(self):
-        self._is_running = False
-        self._shutdown_event = asyncio.Event()
-    
-    async def setup(self) -> None:
-        """应用初始化"""
-        logger.info("=" * 50)
-        logger.info("CoachAI 应用初始化")
-        logger.info("=" * 50)
+    try:
+        # 初始化数据库
+        logger.info("Initializing database...")
+        from src.infrastructure.db.connection import init_database
+        db_manager = init_database()
         
-        # 1. 初始化配置
-        logger.info("[1/5] 初始化配置...")
-        cfg = init_config()
-        logger.info(f"环境: {cfg.APP_ENV}, 调试: {cfg.APP_DEBUG}, 端口: {cfg.APP_PORT}")
+        # 数据库健康检查
+        db_health = db_manager.health_check()
+        logger.info(f"Database health: {db_health['status']}")
         
-        # 2. 初始化数据库
-        logger.info("[2/5] 初始化数据库...")
-        init_database()
-        if db_manager.health_check():
-            logger.info("✅ 数据库连接正常")
-        else:
-            logger.error("❌ 数据库连接失败")
-            raise RuntimeError("数据库连接失败")
+        # 初始化Redis
+        logger.info("Initializing Redis...")
+        from src.infrastructure.cache.redis_client import init_redis
+        redis_manager = init_redis()
         
-        # 3. 初始化Redis
-        logger.info("[3/5] 初始化Redis...")
-        init_redis()
-        if redis_client.health_check():
-            logger.info("✅ Redis连接正常")
-        else:
-            logger.warning("⚠️ Redis连接失败，缓存功能将不可用")
+        # Redis健康检查
+        redis_health = redis_manager.health_check()
+        logger.info(f"Redis health: {redis_health['status']}")
         
-        # 4. 初始化事件总线
-        logger.info("[4/5] 初始化事件总线...")
-        await EventBusFactory.start_event_bus()
-        logger.info(f"✅ 事件总线已启动 ({config.EVENT_BUS_TYPE})")
+        # 初始化事件总线
+        logger.info("Initializing event bus...")
+        from src.application.events.bus import init_event_bus
+        event_bus = init_event_bus()
+        logger.info(f"Event bus initialized: {settings.EVENT_BUS_TYPE}")
         
-        # 5. 注册信号处理器
-        logger.info("[5/5] 注册信号处理器...")
-        self._setup_signal_handlers()
+        # 显示配置信息
+        logger.info("Configuration:")
+        logger.info(f"  Environment: {settings.APP_ENV}")
+        logger.info(f"  Debug mode: {settings.APP_DEBUG}")
+        logger.info(f"  Host: {settings.APP_HOST}")
+        logger.info(f"  Port: {settings.APP_PORT}")
+        logger.info(f"  Database: {settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
+        logger.info(f"  Redis: {settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}")
         
-        logger.info("✅ 应用初始化完成")
-    
-    def _setup_signal_handlers(self) -> None:
-        """设置信号处理器"""
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-    
-    def _signal_handler(self, signum, frame) -> None:
-        """信号处理函数"""
-        logger.info(f"收到信号 {signum}，开始优雅关闭...")
-        self._shutdown_event.set()
-    
-    async def run(self) -> None:
-        """运行应用主循环"""
-        self._is_running = True
+        logger.info("Application initialization completed successfully")
+        logger.info("=" * 60)
         
-        try:
-            logger.info("=" * 50)
-            logger.info("CoachAI 应用启动")
-            logger.info("=" * 50)
-            
-            # 这里可以启动Web服务器、定时任务等
-            # 暂时使用简单的事件循环
-            
-            logger.info(f"应用运行在: http://{config.APP_HOST}:{config.APP_PORT}")
-            logger.info(f"健康检查: http://{config.APP_HOST}:{config.APP_PORT}/api/health")
-            
-            # 等待关闭信号
-            await self._shutdown_event.wait()
-            
-        except Exception as e:
-            logger.error(f"应用运行异常: {e}")
-            raise
+        return {
+            'db_manager': db_manager,
+            'redis_manager': redis_manager,
+            'event_bus': event_bus
+        }
         
-        finally:
-            await self.shutdown()
-    
-    async def shutdown(self) -> None:
-        """应用关闭"""
-        if not self._is_running:
-            return
-        
-        self._is_running = False
-        
-        logger.info("=" * 50)
-        logger.info("CoachAI 应用关闭")
-        logger.info("=" * 50)
-        
-        try:
-            # 1. 停止事件总线
-            logger.info("[1/4] 停止事件总线...")
-            await EventBusFactory.stop_event_bus()
-            logger.info("✅ 事件总线已停止")
-            
-            # 2. 关闭Redis连接
-            logger.info("[2/4] 关闭Redis连接...")
-            redis_client.close()
-            logger.info("✅ Redis连接已关闭")
-            
-            # 3. 关闭数据库连接
-            logger.info("[3/4] 关闭数据库连接...")
-            db_manager.close_all_sessions()
-            logger.info("✅ 数据库连接已关闭")
-            
-            # 4. 清理资源
-            logger.info("[4/4] 清理资源...")
-            # 这里可以添加其他资源清理逻辑
-            
-            logger.info("✅ 应用关闭完成")
-            
-        except Exception as e:
-            logger.error(f"应用关闭异常: {e}")
-        
-        finally:
-            logger.info("=" * 50)
-            logger.info("CoachAI 应用已停止")
-            logger.info("=" * 50)
-    
-    def run_sync(self) -> None:
-        """同步运行应用"""
-        try:
-            # 创建事件循环
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-            # 运行应用
-            loop.run_until_complete(self._run_async())
-            
-        except KeyboardInterrupt:
-            logger.info("收到键盘中断，正在关闭...")
-        
-        except Exception as e:
-            logger.error(f"应用运行失败: {e}")
-            sys.exit(1)
-    
-    async def _run_async(self) -> None:
-        """异步运行应用"""
-        try:
-            await self.setup()
-            await self.run()
-        
-        except Exception as e:
-            logger.error(f"应用运行失败: {e}")
-            await self.shutdown()
-            raise
+    except Exception as e:
+        logger.error(f"Application initialization failed: {e}")
+        logger.error("Shutting down...")
+        raise
 
 
-async def main_async() -> None:
-    """异步主函数"""
-    app = Application()
-    await app.setup()
-    await app.run()
+def cleanup_application():
+    """清理应用资源"""
+    logger.info("Cleaning up application resources...")
+    
+    try:
+        # 关闭Redis连接
+        from src.infrastructure.cache.redis_client import close_redis
+        close_redis()
+        logger.info("Redis connections closed")
+        
+        # 关闭数据库连接
+        from src.infrastructure.db.connection import close_database
+        close_database()
+        logger.info("Database connections closed")
+        
+        # 关闭事件总线
+        from src.application.events.bus import close_event_bus
+        close_event_bus()
+        logger.info("Event bus closed")
+        
+        logger.info("Application cleanup completed")
+        
+    except Exception as e:
+        logger.error(f"Application cleanup failed: {e}")
 
 
-def main() -> None:
-    """同步主函数"""
-    app = Application()
-    app.run_sync()
+def start_server():
+    """启动服务器"""
+    try:
+        # 初始化应用
+        init_result = init_application()
+        
+        # 创建Tornado应用
+        logger.info("Creating Tornado application...")
+        from src.interfaces.web.application import create_application, start_server as tornado_start_server
+        
+        app = create_application()
+        
+        # 显示路由信息
+        logger.info(f"Application created with {len(app.handlers)} handlers")
+        
+        # 启动服务器
+        logger.info("Starting Tornado server...")
+        tornado_start_server()
+        
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user")
+    except Exception as e:
+        logger.error(f"Failed to start server: {e}")
+        raise
+    finally:
+        # 清理资源
+        cleanup_application()
 
 
 if __name__ == "__main__":
-    # 设置日志
-    logger.remove()  # 移除默认处理器
-    
-    # 添加控制台输出
-    logger.add(
-        sys.stdout,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
-        level="DEBUG" if config.APP_DEBUG else "INFO",
-        colorize=True
-    )
-    
-    # 运行应用
-    main()
+    start_server()
